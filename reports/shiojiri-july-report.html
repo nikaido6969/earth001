@@ -1,0 +1,582 @@
+<title>塩尻市 7月度活動報告</title>
+
+<style>
+  :root {
+    --bg:        #ffffff;
+    --fill:      #f5f5f7;
+    --ink:       #1d1d1f;
+    --ink2:      #6e6e73;
+    --ink3:      #86868b;
+    --line:      #d2d2d7;
+    --line-soft: #e8e8ed;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:        #000000;
+      --fill:      #1d1d1f;
+      --ink:       #f5f5f7;
+      --ink2:      #a1a1a6;
+      --ink3:      #86868b;
+      --line:      #3a3a3c;
+      --line-soft: #2a2a2c;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg:        #000000;
+    --fill:      #1d1d1f;
+    --ink:       #f5f5f7;
+    --ink2:      #a1a1a6;
+    --ink3:      #86868b;
+    --line:      #3a3a3c;
+    --line-soft: #2a2a2c;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro JP", "SF Pro Text",
+                 "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic",
+                 "Noto Sans JP", system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    letter-spacing: .005em;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "palt" 1;
+  }
+
+  .page {
+    max-width: 1060px;
+    margin: 0 auto;
+    padding: clamp(40px, 6vw, 80px) clamp(20px, 5vw, 48px) 88px;
+  }
+
+  /* ============ masthead ============ */
+
+  .masthead { padding-bottom: 40px; }
+
+  .eyebrow {
+    margin: 0 0 14px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    color: var(--ink3);
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(34px, 5.6vw, 60px);
+    font-weight: 700;
+    line-height: 1.06;
+    letter-spacing: -.022em;
+    text-wrap: balance;
+  }
+
+  .subhead {
+    margin: 18px 0 0;
+    font-size: clamp(17px, 2.2vw, 21px);
+    font-weight: 400;
+    line-height: 1.45;
+    letter-spacing: -.005em;
+    color: var(--ink2);
+    max-width: 34em;
+  }
+
+  .meta {
+    margin-top: 22px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 28px;
+    font-size: 13px;
+    color: var(--ink3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ============ KPI ============ */
+
+  .kpi {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .kpi > div {
+    padding: 26px 24px 26px 0;
+    border-left: 1px solid var(--line-soft);
+    padding-left: 24px;
+  }
+  .kpi > div:first-child { border-left: none; padding-left: 0; }
+
+  .kpi .n {
+    display: block;
+    font-size: clamp(30px, 4.4vw, 44px);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -.03em;
+    font-variant-numeric: tabular-nums;
+  }
+  .kpi .n span {
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0;
+    margin-left: 4px;
+  }
+
+  .kpi .k {
+    display: block;
+    margin-top: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: -.005em;
+  }
+
+  .kpi .d {
+    display: block;
+    margin-top: 4px;
+    font-size: 12px;
+    line-height: 1.55;
+    color: var(--ink3);
+  }
+
+  /* ============ sections ============ */
+
+  section {
+    display: grid;
+    grid-template-columns: 210px 1fr;
+    gap: 0 48px;
+    padding: 48px 0;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  section:last-of-type { border-bottom: none; }
+
+  .sec-title {
+    margin: 0;
+    font-size: 21px;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -.015em;
+    position: sticky;
+    top: 32px;
+    align-self: start;
+  }
+
+  .sec-title .no {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink3);
+    letter-spacing: 0;
+    margin-bottom: 6px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .body { display: flex; flex-direction: column; gap: 26px; min-width: 0; }
+
+  h3 {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: .01em;
+    color: var(--ink3);
+  }
+
+  p { margin: 0; max-width: 60ch; }
+  .note { font-size: 13.5px; color: var(--ink2); line-height: 1.75; }
+
+  strong { font-weight: 600; }
+
+  /* ============ tables ============ */
+
+  .scroll { overflow-x: auto; margin: 0 -2px; }
+
+  table {
+    width: 100%;
+    min-width: 460px;
+    border-collapse: collapse;
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  tbody td {
+    padding: 13px 16px 13px 0;
+    border-top: 1px solid var(--line-soft);
+    vertical-align: top;
+  }
+  tbody tr:first-child td { border-top: none; }
+  tbody td:last-child { padding-right: 0; }
+
+  td.d {
+    width: 1%;
+    white-space: nowrap;
+    padding-right: 22px;
+    color: var(--ink3);
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    padding-top: 15px;
+  }
+
+  td.n { width: 28%; font-weight: 600; letter-spacing: -.005em; }
+  td.n em { display: block; font-style: normal; font-weight: 400; font-size: 12.5px; color: var(--ink3); }
+  td.t { color: var(--ink2); }
+  td.t strong { color: var(--ink); }
+
+  /* ============ compact lists ============ */
+
+  ul.cols {
+    margin: 0; padding: 0; list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 0 40px;
+  }
+
+  ul.cols li {
+    padding: 11px 0;
+    border-top: 1px solid var(--line-soft);
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--ink2);
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: 12px;
+  }
+  ul.cols li b {
+    font-weight: 500;
+    color: var(--ink3);
+    font-size: 12.5px;
+    font-variant-numeric: tabular-nums;
+    padding-top: 1px;
+  }
+  ul.cols li strong { color: var(--ink); }
+
+  ol.steps { margin: 0; padding: 0; list-style: none; counter-reset: s; }
+  ol.steps li {
+    counter-increment: s;
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 14px;
+    padding: 14px 0;
+    border-top: 1px solid var(--line-soft);
+    font-size: 14px;
+    color: var(--ink2);
+  }
+  ol.steps li:first-child { border-top: none; }
+  ol.steps li::before {
+    content: counter(s);
+    font-size: 12.5px;
+    color: var(--ink3);
+    padding-top: 3px;
+    font-variant-numeric: tabular-nums;
+  }
+  ol.steps li strong { color: var(--ink); display: block; }
+
+  /* ============ status rows ============ */
+
+  .status { display: grid; gap: 0; }
+  .status > div {
+    display: grid;
+    grid-template-columns: 176px 1fr;
+    gap: 6px 28px;
+    padding: 15px 0;
+    border-top: 1px solid var(--line-soft);
+  }
+  .status > div:first-child { border-top: none; }
+
+  .status dt {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: -.005em;
+  }
+  .status dt em {
+    display: block;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    color: var(--ink3);
+    font-variant-numeric: tabular-nums;
+    margin-top: 2px;
+  }
+  .status dd {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.75;
+    color: var(--ink2);
+  }
+
+  /* ============ callout ============ */
+
+  .callout {
+    background: var(--fill);
+    padding: 18px 22px;
+    border-radius: 12px;
+    font-size: 13px;
+    line-height: 1.75;
+    color: var(--ink2);
+    max-width: none;
+  }
+
+  /* ============ footer ============ */
+
+  footer {
+    margin-top: 56px;
+    padding-top: 22px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 6px 24px;
+    font-size: 12px;
+    color: var(--ink3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ============ responsive ============ */
+
+  @media (max-width: 860px) {
+    .kpi { grid-template-columns: repeat(2, 1fr); }
+    .kpi > div:nth-child(3) { border-left: none; padding-left: 0; }
+    .kpi > div:nth-child(3), .kpi > div:nth-child(4) { border-top: 1px solid var(--line-soft); }
+    section { grid-template-columns: 1fr; gap: 22px; }
+    .sec-title { position: static; }
+    .status > div { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="page">
+
+  <header class="masthead">
+    <p class="eyebrow">株式会社アース ／ ふるさと納税支援業務</p>
+    <h1>塩尻市　7月度 活動報告</h1>
+    <p class="subhead">事業者訪問、新規返礼品の申請・掲載、地場産品基準 第3号への対応を中心に進めました。</p>
+    <div class="meta">
+      <span>2026年7月1日 — 7月31日</span>
+      <span>報告者：二階堂</span>
+    </div>
+  </header>
+
+  <div class="kpi">
+    <div>
+      <span class="n">6<span>件</span></span>
+      <span class="k">事業者 訪問・面談</span>
+      <span class="d">うち1件は塩尻市 企画課 同席</span>
+    </div>
+    <div>
+      <span class="n">5<span>社</span></span>
+      <span class="k">新規事業者 対応</span>
+      <span class="d">くるみっくる／Voyage Coffee／タナカセイサクショ ほか</span>
+    </div>
+    <div>
+      <span class="n">14<span>社</span></span>
+      <span class="k">3号 一斉フォロー</span>
+      <span class="d">7/16 未提出事業者へ架電・メール</span>
+    </div>
+    <div>
+      <span class="n">6<span>件</span></span>
+      <span class="k">疑義照会 対応</span>
+      <span class="d">塩尻市森林公社分／7月中に対応済み</span>
+    </div>
+  </div>
+
+  <section>
+    <h2 class="sec-title"><span class="no">01</span>事業者訪問・面談</h2>
+    <div class="body">
+      <div class="scroll">
+        <table>
+          <tbody>
+            <tr>
+              <td class="d">7/2</td>
+              <td class="n">くるみっくる<em>百瀬様</em></td>
+              <td class="t">訪問。新規返礼品の事業者説明を実施。発送方法・規格を確定し返礼品シートへ反映（2022年登録済・休止からの再開）</td>
+            </tr>
+            <tr>
+              <td class="d">7/13</td>
+              <td class="n">レッドハウスファニチャー<em>増田様</em></td>
+              <td class="t">3号該当につき協議。10/1以降は<strong>塩尻市・朝日村 共通返礼品（8号）</strong>での継続をご提案</td>
+            </tr>
+            <tr>
+              <td class="d">7/15</td>
+              <td class="n">リカーハウスながはら</td>
+              <td class="t">訪問。ワインの地場産品基準（2号／3号）について確認・説明</td>
+            </tr>
+            <tr>
+              <td class="d">7/17</td>
+              <td class="n">Voyage Coffee<em>中澤様</em></td>
+              <td class="t">Web面談にて新規事業者説明。3号の先駆け申請の方針を確認</td>
+            </tr>
+            <tr>
+              <td class="d">7/23</td>
+              <td class="n">タナカセイサクショ</td>
+              <td class="t">訪問。3号ヒアリングを実施。金属雑貨（キーホルダー等）の返礼品化をご提案</td>
+            </tr>
+            <tr>
+              <td class="d">7/24</td>
+              <td class="n">株式会社うぃずの森<em>中山様</em></td>
+              <td class="t"><strong>塩尻市 企画課職員 同席のうえ事業者説明</strong>（青果物・ぶどう）。早期にご提出いただくための運用面の工夫についても協議</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">上記のほか、6/25 訪問済みの塩尻・木曽地域地場産業振興センターへ 7/10 期限のフォロー、新規ぶどう・りんご農家（塩原農園／小川葡萄・SHIOJIRI BASE／山本農園／信州ニコニコ農園）の登録に向けたフォローアップを継続しました。</p>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="sec-title"><span class="no">02</span>新規返礼品の<br>掲載・申請</h2>
+    <div class="body">
+      <h3>申請・登録手続きを行ったもの</h3>
+      <div class="scroll">
+        <table>
+          <tbody>
+            <tr><td class="d">7/2</td><td class="n">有限会社ティーズギター</td><td class="t">再申請の準備（3号 → 99号への区分変更）</td></tr>
+            <tr><td class="d">7/6</td><td class="n">塩尻市農産「ベスト米」</td><td class="t">再掲載対応</td></tr>
+            <tr><td class="d">7/10</td><td class="n">くるみっくる<em>クルミ</em></td><td class="t">登録申請</td></tr>
+            <tr><td class="d">7/13</td><td class="n">株式会社クボタ<em>馬刺し</em></td><td class="t">3号での申請方針にて回答受領。8号ハと並行して進行</td></tr>
+            <tr><td class="d">7/17</td><td class="n">Voyage Coffee<em>コーヒー</em></td><td class="t"><strong>3号 様式2号にて申請済み（7品目＋3品目＝計10品目）</strong></td></tr>
+            <tr><td class="d">7/18</td><td class="n">ワイン各社<em>アルプス・サントリーを除く</em></td><td class="t"><strong>地場産品基準 2号での申請</strong>／ワイン以外の返礼品もあわせて申請</td></tr>
+            <tr><td class="d">7/22</td><td class="n">地場産業振興センター／観光協会／リカーハウス／アルプス／五一ワイン／信濃ワイン</td><td class="t"><strong>様式2号 申請</strong></td></tr>
+            <tr><td class="d">7/23</td><td class="n">ワイン新規案件 ほか</td><td class="t">塩尻市へ申請</td></tr>
+            <tr><td class="d">7/27</td><td class="n">株式会社DMH</td><td class="t">新規ワインについて確認依頼</td></tr>
+            <tr><td class="d">7/27</td><td class="n">リカーハウス永原</td><td class="t">基準非該当につき申請不可のご連絡</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>掲載中返礼品の在庫・受注・ページ対応</h3>
+      <ul class="cols">
+        <li><b>7/6</b><span>33ワイナリー（武藤様）　掲載用画像・在庫数の確認</span></li>
+        <li><b>7/14</b><span>信州ひかりや／yoshieヴィンヤード／ベジサコ／リッチプラネット／元祖山賊／信州吉野電機　掲載・申請の個別対応</span></li>
+        <li><b>7/27</b><span>山本農園　在庫追加調整</span></li>
+        <li><b>7/28</b><span>モモセ果樹園　在庫追加依頼</span></li>
+        <li><b>7/29</b><span>結穂有限責任事業組合　返礼品シート修正・掲載準備</span></li>
+        <li><b>7/29</b><span>株式会社うぃずの森　返礼品シート作成（ぶどう2t規模の規格提案が進行中）</span></li>
+      </ul>
+
+      <p class="callout">掲載ページのURL一覧は日報・進捗DB上に記録がないため、本報告では事業者・品目単位での記載としております。URL付きの一覧が必要な場合は、各ポータルの管理画面から別途抽出のうえご提出いたします。</p>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="sec-title"><span class="no">03</span>地場産品基準<br>第3号 対応</h2>
+    <div class="body">
+      <p class="note">令和8年10月の制度改正施行に向け、7月は「証明書・別添書類の発行」と「未提出事業者の回収」を集中的に進めました。</p>
+
+      <div class="scroll">
+        <table>
+          <tbody>
+            <tr><td class="d">7/4</td><td class="t">未提出事業者へ リマインドメール送信</td></tr>
+            <tr><td class="d">7/7</td><td class="t">3号 証明書の発行作業（塩尻市事業者分）</td></tr>
+            <tr><td class="d">7/8</td><td class="t"><strong>塩尻市との提出前 再確認・すり合わせMTG</strong></td></tr>
+            <tr><td class="d">7/9</td><td class="t">別添1・2／様式2号の<strong>自動発行の仕組みを構築完了</strong>。以降の発行作業を大幅に効率化</td></tr>
+            <tr><td class="d">7/10</td><td class="t">別添1・2 の発行</td></tr>
+            <tr><td class="d">7/13</td><td class="t">別添1・2＋別添2 を統合のうえ<strong>提出完了</strong>／自治体MTG（ワインの2号・3号の取扱い）</td></tr>
+            <tr><td class="d">7/15</td><td class="t">別添1・2 提出</td></tr>
+            <tr><td class="d">7/16</td><td class="t"><strong>未回答14社へ一斉フォロー（架電・メール）</strong>　サンサンワイナリー／井筒ワイナリー／永原酒造／庄太郎／キッセイ商事／結穂組合／マンジャピッツァ／モントレイビール／MOU／五一ワイン／杉の森酒造／青柳農園／いにしぇの里葡萄酒／自然派工房</td></tr>
+            <tr><td class="d">7/17</td><td class="t">ワインの地場産品基準の確認・整理</td></tr>
+            <tr><td class="d">7/21</td><td class="t">ワイン2号・3号の切り分け対応　木下商店／DMH／地場産業振興センター／観光協会／ドメーヌコーセイ／キッセイ商事</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>7月末時点の対象事業者ステータス</h3>
+      <dl class="status">
+        <div>
+          <dt>塩尻市へ申請済み<em>24社</em></dt>
+          <dd>各務製粉／RICHPLANET／龍門堂／センターフィールド／woodworks one／日本ふるさと創生／花屋漆器産業／ティーズギター／塩尻市森林公社／酒井産業／（株）クボタ／片倉養蜂場／雲居鶴／山賊／OPカンパニー（かめや）／小口研治ステンドグラススタイル／信州吉野電機／MOU／薗部技研／中村漆器産業／Mangia Pizza／キッセイ商事／自然派工房／地場産業振興センター</dd>
+        </div>
+        <div>
+          <dt>申請準備済み<em>1社</em></dt>
+          <dd>MOON-X Japan（ケラッタカンパニー）　公表同意の回答待ち</dd>
+        </div>
+        <div>
+          <dt>電話・LINEで継続対応<em>3社</em></dt>
+          <dd>美寿々酒造／（株）庄太郎／丸永酒造場　未提出の場合は掲載停止となる旨をお伝え済み</dd>
+        </div>
+        <div>
+          <dt>撤退<em>4社</em></dt>
+          <dd>レッドハウスファニチャー（→朝日村との共通8号へ）／東山食堂／Re:gelato／（有）塩尻建友（ベーカリー・スリエ・閉店）</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="sec-title"><span class="no">04</span>ワイン定期便<br>企画</h2>
+    <div class="body">
+      <p class="note">塩尻市の主力である「ワイン」を軸とした定期便企画を、自治体・事業者双方と並行して進めました。</p>
+      <ul class="cols">
+        <li><b>7/1</b><span>自治体との ワイン定期便 MTG</span></li>
+        <li><b>7/2–3</b><span>定期便の構成作成、<strong>7社へ発注買取・見積依頼</strong></span></li>
+        <li><b>7/6</b><span>観光協会 売店（高砂様）へ追加見積依頼／幸西ワイナリー・信州ひかりや（信濃ワイン・ブランデー）対応</span></li>
+        <li><b>7/8</b><span>定期便の手配</span></li>
+        <li><b>7/9</b><span>ワイン手配 6社対応</span></li>
+        <li><b>7/14</b><span><strong>塩尻市ワインの件について 酒井MGR・山崎MGR とMTG</strong></span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="sec-title"><span class="no">05</span>自治体対応・<br>報告業務</h2>
+    <div class="body">
+      <div class="scroll">
+        <table>
+          <tbody>
+            <tr><td class="d">随時</td><td class="t">7/1・7/6・7/14・7/18・7/22　塩尻市 担当課とのご相談・調整</td></tr>
+            <tr><td class="d">7/13</td><td class="t">自治体MTG（3号／ワインの2号・3号の取扱い）</td></tr>
+            <tr><td class="d">7/24</td><td class="t"><strong>6月度 月次報告書の下書きをご提出</strong>／評価シート対応</td></tr>
+            <tr><td class="d">7/27</td><td class="t"><strong>疑義照会 対応済み（塩尻市森林公社 6件）</strong>／月次報告書 補足資料に着手</td></tr>
+            <tr><td class="d">7/28</td><td class="t">月次補足資料 作成 ・ <strong>月次報告会議</strong></td></tr>
+            <tr><td class="d">7/29</td><td class="t">圧着ハガキ（同梱物）対応</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="sec-title"><span class="no">06</span>販促・広告運用</h2>
+    <div class="body">
+      <ul class="cols">
+        <li><b>7/18<br>7/24</b><span>楽天RPP（検索連動型広告）のキーワード・CPC調整</span></li>
+        <li><b>7/24</b><span><strong>楽天ふるさと納税フェス エントリー対応</strong></span></li>
+        <li><b>7/2</b><span>松本市との共通返礼品（BELKA）の取扱い整理</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="sec-title"><span class="no">07</span>8月度に向けた<br>継続事項</h2>
+    <div class="body">
+      <ol class="steps">
+        <li><strong>新規事業者の掲載完了</strong>信州ニコニコ農園（りんご9品以上）、塩原農園、小川葡萄（SHIOJIRI BASE・9月登録目標）、山本農園、YoShieヴィンヤードの登録・掲載</li>
+        <li><strong>株式会社うぃずの森</strong>ぶどう2t規模の規格提案の確定と掲載</li>
+        <li><strong>3号 未提出事業者</strong>美寿々酒造・（株）庄太郎・丸永酒造場ほかの証明書回収（未提出の場合は掲載停止の判断）</li>
+        <li><strong>ケラッタカンパニー</strong>公表同意の回答受領後、申請へ</li>
+        <li><strong>繁忙期の受注管理</strong>ぶどう・シャインマスカットの出荷に向けた在庫管理（ファームシンセイ、信州ひかり屋 ほか）</li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="sec-title"><span class="no">08</span>本報告の<br>作成元データ</h2>
+    <div class="body">
+      <dl class="status">
+        <div><dt>Notion「日報」</dt><dd>利用。7/1〜7/31 の塩尻市分の記録（Lark日報の内容が反映されたもの）</dd></div>
+        <div><dt>塩尻市 事業者進捗DB</dt><dd>利用。訪問日・ステータス・次アクション</dd></div>
+        <div><dt>3号対応事業者DB</dt><dd>利用。申請ステータス・備考</dd></div>
+        <div><dt>Googleカレンダー</dt><dd>利用。7/24 塩尻市企画課同席 事業者説明</dd></div>
+        <div><dt>Slack</dt><dd>7月度の該当メッセージなし（接続中のワークスペースは2026年5月19日以降の投稿がないため）</dd></div>
+        <div><dt>Lark</dt><dd>本環境から未接続のため直接参照できず。内容はNotion日報の記録で代替</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <footer>
+    <span>塩尻市 ふるさと納税支援業務　7月度 活動報告</span>
+    <span>2026年7月1日 — 7月31日</span>
+  </footer>
+
+</div>
