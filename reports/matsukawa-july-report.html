@@ -1,0 +1,501 @@
+<title>松川村 7月度活動報告</title>
+
+<style>
+  :root {
+    --bg:        #ffffff;
+    --fill:      #f5f5f7;
+    --ink:       #1d1d1f;
+    --ink2:      #6e6e73;
+    --ink3:      #86868b;
+    --line:      #d2d2d7;
+    --line-soft: #e8e8ed;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:        #000000;
+      --fill:      #1d1d1f;
+      --ink:       #f5f5f7;
+      --ink2:      #a1a1a6;
+      --ink3:      #86868b;
+      --line:      #3a3a3c;
+      --line-soft: #2a2a2c;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg:        #000000;
+    --fill:      #1d1d1f;
+    --ink:       #f5f5f7;
+    --ink2:      #a1a1a6;
+    --ink3:      #86868b;
+    --line:      #3a3a3c;
+    --line-soft: #2a2a2c;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro JP", "SF Pro Text",
+                 "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic",
+                 "Noto Sans JP", system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    letter-spacing: .005em;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "palt" 1;
+  }
+
+  .page {
+    max-width: 1060px;
+    margin: 0 auto;
+    padding: clamp(40px, 6vw, 80px) clamp(20px, 5vw, 48px) 88px;
+  }
+
+  /* ============ masthead ============ */
+
+  .masthead { padding-bottom: 40px; }
+
+  .eyebrow {
+    margin: 0 0 14px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    color: var(--ink3);
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(34px, 5.6vw, 60px);
+    font-weight: 700;
+    line-height: 1.06;
+    letter-spacing: -.022em;
+    text-wrap: balance;
+  }
+
+  .subhead {
+    margin: 18px 0 0;
+    font-size: clamp(17px, 2.2vw, 21px);
+    font-weight: 400;
+    line-height: 1.45;
+    letter-spacing: -.005em;
+    color: var(--ink2);
+    max-width: 34em;
+  }
+
+  .meta {
+    margin-top: 22px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 28px;
+    font-size: 13px;
+    color: var(--ink3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ============ KPI ============ */
+
+  .kpi {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .kpi > div {
+    padding: 26px 24px 26px 0;
+    border-left: 1px solid var(--line-soft);
+    padding-left: 24px;
+  }
+  .kpi > div:first-child { border-left: none; padding-left: 0; }
+
+  .kpi .n {
+    display: block;
+    font-size: clamp(30px, 4.4vw, 44px);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -.03em;
+    font-variant-numeric: tabular-nums;
+  }
+  .kpi .n span {
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0;
+    margin-left: 4px;
+  }
+
+  .kpi .k {
+    display: block;
+    margin-top: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: -.005em;
+  }
+
+  .kpi .d {
+    display: block;
+    margin-top: 4px;
+    font-size: 12px;
+    line-height: 1.55;
+    color: var(--ink3);
+  }
+
+  /* ============ sections ============ */
+
+  section {
+    display: grid;
+    grid-template-columns: 210px 1fr;
+    gap: 0 48px;
+    padding: 48px 0;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  section:last-of-type { border-bottom: none; }
+
+  .sec-title {
+    margin: 0;
+    font-size: 21px;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -.015em;
+    position: sticky;
+    top: 32px;
+    align-self: start;
+  }
+
+  .sec-title .no {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink3);
+    letter-spacing: 0;
+    margin-bottom: 6px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .body { display: flex; flex-direction: column; gap: 26px; min-width: 0; }
+
+  h3 {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: .01em;
+    color: var(--ink3);
+  }
+
+  p { margin: 0; max-width: 60ch; }
+  .note { font-size: 13.5px; color: var(--ink2); line-height: 1.75; }
+
+  strong { font-weight: 600; }
+
+  /* ============ tables ============ */
+
+  .scroll { overflow-x: auto; margin: 0 -2px; }
+
+  table {
+    width: 100%;
+    min-width: 460px;
+    border-collapse: collapse;
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  tbody td {
+    padding: 13px 16px 13px 0;
+    border-top: 1px solid var(--line-soft);
+    vertical-align: top;
+  }
+  tbody tr:first-child td { border-top: none; }
+  tbody td:last-child { padding-right: 0; }
+
+  td.d {
+    width: 1%;
+    white-space: nowrap;
+    padding-right: 22px;
+    color: var(--ink3);
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    padding-top: 15px;
+  }
+
+  td.n { width: 28%; font-weight: 600; letter-spacing: -.005em; }
+  td.n em { display: block; font-style: normal; font-weight: 400; font-size: 12.5px; color: var(--ink3); }
+  td.t { color: var(--ink2); }
+  td.t strong { color: var(--ink); }
+
+  /* ============ compact lists ============ */
+
+  ul.cols {
+    margin: 0; padding: 0; list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 0 40px;
+  }
+
+  ul.cols li {
+    padding: 11px 0;
+    border-top: 1px solid var(--line-soft);
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--ink2);
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: 12px;
+  }
+  ul.cols li b {
+    font-weight: 500;
+    color: var(--ink3);
+    font-size: 12.5px;
+    font-variant-numeric: tabular-nums;
+    padding-top: 1px;
+  }
+  ul.cols li strong { color: var(--ink); }
+
+  ol.steps { margin: 0; padding: 0; list-style: none; counter-reset: s; }
+  ol.steps li {
+    counter-increment: s;
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 14px;
+    padding: 14px 0;
+    border-top: 1px solid var(--line-soft);
+    font-size: 14px;
+    color: var(--ink2);
+  }
+  ol.steps li:first-child { border-top: none; }
+  ol.steps li::before {
+    content: counter(s);
+    font-size: 12.5px;
+    color: var(--ink3);
+    padding-top: 3px;
+    font-variant-numeric: tabular-nums;
+  }
+  ol.steps li strong { color: var(--ink); display: block; }
+
+  /* ============ status rows ============ */
+
+  .status { display: grid; gap: 0; }
+  .status > div {
+    display: grid;
+    grid-template-columns: 176px 1fr;
+    gap: 6px 28px;
+    padding: 15px 0;
+    border-top: 1px solid var(--line-soft);
+  }
+  .status > div:first-child { border-top: none; }
+
+  .status dt {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: -.005em;
+  }
+  .status dt em {
+    display: block;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    color: var(--ink3);
+    font-variant-numeric: tabular-nums;
+    margin-top: 2px;
+  }
+  .status dd {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.75;
+    color: var(--ink2);
+  }
+
+  /* ============ callout ============ */
+
+  .callout {
+    background: var(--fill);
+    padding: 18px 22px;
+    border-radius: 12px;
+    font-size: 13px;
+    line-height: 1.75;
+    color: var(--ink2);
+    max-width: none;
+  }
+
+  /* ============ footer ============ */
+
+  footer {
+    margin-top: 56px;
+    padding-top: 22px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 6px 24px;
+    font-size: 12px;
+    color: var(--ink3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ============ responsive ============ */
+
+  @media (max-width: 860px) {
+    .kpi { grid-template-columns: repeat(2, 1fr); }
+    .kpi > div:nth-child(3) { border-left: none; padding-left: 0; }
+    .kpi > div:nth-child(3), .kpi > div:nth-child(4) { border-top: 1px solid var(--line-soft); }
+    section { grid-template-columns: 1fr; gap: 22px; }
+    .sec-title { position: static; }
+    .status > div { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="page">
+
+  <header class="masthead">
+    <p class="eyebrow">株式会社アース ／ ふるさと納税支援業務</p>
+    <h1>松川村　7月度 活動報告</h1>
+    <p class="subhead">地場産品基準 第3号の村への提出を完了し、新規返礼品の公開と生活応援キャンペーンの対応を進めました。</p>
+    <div class="meta">
+      <span>2026年7月1日 — 7月31日</span>
+      <span>報告者：二階堂</span>
+    </div>
+  </header>
+
+  <div class="kpi">
+    <div>
+      <span class="n">11<span>品</span></span>
+      <span class="k">新規返礼品 公開</span>
+      <span class="d">Flower Shop花野果様 AF24〜AF34</span>
+    </div>
+    <div>
+      <span class="n">7<span>/8</span></span>
+      <span class="k">3号 村へ提出完了</span>
+      <span class="d">別添1・2＋別添2を統合し提出</span>
+    </div>
+    <div>
+      <span class="n">0<span>件</span></span>
+      <span class="k">キャンペーン監査 抽出</span>
+      <span class="d">終了報告後の監査で該当なし</span>
+    </div>
+    <div>
+      <span class="n">1<span>回</span></span>
+      <span class="k">月次報告会議</span>
+      <span class="d">7/27 開催・疑義照会もあわせて対応</span>
+    </div>
+  </div>
+
+  <section>
+    <h2 class="sec-title"><span class="no">01</span>新規返礼品の<br>掲載・公開</h2>
+    <div class="body">
+      <div class="scroll">
+        <table>
+          <tbody>
+            <tr>
+              <td class="d">7月下旬</td>
+              <td class="n">Flower Shop花野果様<em>新規返礼品 AF24〜AF34</em></td>
+              <td class="t"><strong>Wチェック＋do登録を完了し、楽天ふるさと納税・ふるさとチョイスにて公開</strong>。ふるなびは週明けに公開</td>
+            </tr>
+            <tr>
+              <td class="d">7月下旬</td>
+              <td class="n">安曇野SKY版画工房様<em>K11〜K39 ほか</em></td>
+              <td class="t">K11〜K39 を除く全品について <strong>do 金額の確認・修正を完了</strong>。K11〜K39 は do 未登録のため週内対応とし、<strong>後日すべて対応完了</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="callout">上記2件は Lark「松川村ふるさと納税」および「安曇野らへん」チャンネルの記録に基づくものです。チャンネル上の表記が相対日付のため、本報告では「7月下旬」として記載しております。正確な日付が必要な場合は別途ご確認のうえ差し替えます。</p>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="sec-title"><span class="no">02</span>地場産品基準<br>第3号 対応</h2>
+    <div class="body">
+      <div class="scroll">
+        <table>
+          <tbody>
+            <tr><td class="d">7/7</td><td class="t">3号 証明書 発行（松川村 事業者分）</td></tr>
+            <tr><td class="d">7/8</td><td class="t">別添1・2 と 別添2 の<strong>統合が完了し、村へ提出済み</strong></td></tr>
+            <tr><td class="d">7/9</td><td class="t"><strong>松川村へ 3号申請の内容をご説明</strong>。あわせて生活応援キャンペーンのご承諾をいただく</td></tr>
+            <tr><td class="d">7/9</td><td class="t">別添1・2／様式2号の自動発行の仕組みを構築完了。以降の発行作業を大幅に効率化</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="sec-title"><span class="no">03</span>生活応援<br>キャンペーン</h2>
+    <div class="body">
+      <ul class="cols">
+        <li><b>7/9</b><span>村より<strong>キャンペーン実施のご承諾</strong>をいただく</span></li>
+        <li><b>7月下旬</b><span>全社依頼分の<strong>サムネイルのロゴ削除＋LP画像の差し替えが完了</strong></span></li>
+        <li><b>7月下旬</b><span>終了報告を受けての<strong>返礼品一括監査を実施 → 該当返礼品の抽出なし</strong></span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="sec-title"><span class="no">04</span>自治体対応・<br>報告業務</h2>
+    <div class="body">
+      <div class="scroll">
+        <table>
+          <tbody>
+            <tr><td class="d">7/8</td><td class="t">別添書類の提出後、翌日に村へ確認のご連絡</td></tr>
+            <tr><td class="d">7/10</td><td class="t">経費について 総務課 隠居様とご相談・調整</td></tr>
+            <tr><td class="d">7/24</td><td class="t">月次報告書の作成に着手</td></tr>
+            <tr><td class="d">7/27</td><td class="t"><strong>月次報告会議</strong>／<strong>疑義照会 対応済み</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="sec-title"><span class="no">05</span>広告運用</h2>
+    <div class="body">
+      <ul class="cols">
+        <li><b>7/1</b><span>広告実績の入力（月初の予実管理）</span></li>
+        <li><b>7/10</b><span>楽天RPP の調整</span></li>
+        <li><b>7/27</b><span>楽天RPP のキーワード・CPC調整</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="sec-title"><span class="no">06</span>新規開拓</h2>
+    <div class="body">
+      <ul class="cols">
+        <li><b>継続</b><span><strong>松川村商工会（ミツザワ様）</strong>　総務課 隠居様よりご紹介。ふるさと納税にご関心をお持ちいただいており、アポイントを調整中</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="sec-title"><span class="no">07</span>8月度に向けた<br>継続事項</h2>
+    <div class="body">
+      <ol class="steps">
+        <li><strong>Flower Shop花野果様</strong>ふるなびでの公開（楽天・ふるさとチョイスは公開済み）</li>
+        <li><strong>安曇野SKY版画工房様</strong>K11〜K39 の do 登録・金額修正の完了確認</li>
+        <li><strong>松川村商工会（ミツザワ様）</strong>アポイント調整と初回ご説明</li>
+        <li><strong>3号 対応</strong>提出済み書類に対する村・総務省からの照会対応</li>
+        <li><strong>広告運用</strong>秋の需要期に向けた楽天RPP・チョイス広告の予算配分見直し</li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="sec-title"><span class="no">08</span>本報告の<br>作成元データ</h2>
+    <div class="body">
+      <dl class="status">
+        <div><dt>Notion「日報」</dt><dd>利用。7/1〜7/31 の松川村分の記録（Lark日報の内容が反映されたもの）</dd></div>
+        <div><dt>Lark／松川村ふるさと納税</dt><dd>利用。新規返礼品の公開報告、キャンペーン対応・監査結果（7月下旬）</dd></div>
+        <div><dt>Lark／安曇野らへん</dt><dd>利用。安曇野SKY版画工房様の do 金額確認・修正、花野果様の公開対応</dd></div>
+        <div><dt>松川村 事業者進捗DB</dt><dd>利用。商工会（ミツザワ様）のステータス・次アクション</dd></div>
+        <div><dt>Slack</dt><dd>7月度の該当メッセージなし（接続中のワークスペースは2026年5月19日以降の投稿がないため）</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <footer>
+    <span>松川村 ふるさと納税支援業務　7月度 活動報告</span>
+    <span>2026年7月1日 — 7月31日</span>
+  </footer>
+
+</div>
