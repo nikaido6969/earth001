@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+  <title>返礼品管理ポータル</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <h1 id="operator-name">返礼品管理ポータル</h1>
+      <div class="muni" id="operator-muni"></div>
+    </div>
+    <button class="logout-btn" id="logout-btn">ログアウト</button>
+  </header>
+
+  <main class="container">
+    <div id="product-list"></div>
+  </main>
+
+  <!-- 操作用ボトムシート -->
+  <div class="sheet-backdrop hidden" id="sheet-backdrop">
+    <div class="sheet" id="sheet-content"></div>
+  </div>
+
+  <script type="module" src="/js/portal.js"></script>
+</body>
+</html>

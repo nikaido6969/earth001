@@ -1,0 +1,21 @@
+{
+  "name": "furusato-operator-portal-server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "事業者向けスマホ管理ポータル（在庫・価格・発送/受付期間変更）+ Lark通知 + 塩尻市マスタ連携API",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.0",
+    "xlsx": "^0.18.5"
+  }
+}

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>管理画面 | ふるさと納税 返礼品管理ポータル</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <header class="app-header">
+    <h1>自治体担当者 管理画面</h1>
+    <button class="logout-btn" id="logout-btn">ログアウト</button>
+  </header>
+
+  <main class="container">
+    <div id="login-panel" class="login-card" style="margin-top:20px;">
+      <h1 style="font-size:16px;">管理者ログイン</h1>
+      <label for="admin-password">管理者パスワード</label>
+      <input type="password" id="admin-password" />
+      <button class="btn-primary" id="admin-login-btn">ログイン</button>
+      <div class="error-msg" id="admin-error"></div>
+    </div>
+
+    <div id="admin-panel" style="display:none;">
+      <div class="section-title">塩尻市マスタの取込</div>
+      <p style="font-size:12px;color:#6b7570;">
+        塩尻市マスタ（返礼品マスタ）の xlsx / csv ファイルをアップロードすると、事業者ごとに担当返礼品を抽出し、
+        未登録の事業者にはログイン用ID・パスワードを自動発行します。列見出しの対応表は
+        <code>docs/sample_master_template.csv</code> を参照してください。
+      </p>
+      <label for="municipality">自治体名</label>
+      <input type="text" id="municipality" value="塩尻市" />
+      <label for="master-file">マスタファイル（.xlsx / .csv）</label>
+      <input type="file" id="master-file" accept=".xlsx,.xls,.csv" />
+      <button class="btn-primary" id="import-btn">取り込む</button>
+      <div class="error-msg" id="import-error"></div>
+      <div id="import-result"></div>
+
+      <div class="section-title">事業者一覧</div>
+      <div id="operators-wrap"></div>
+    </div>
+  </main>
+
+  <script type="module" src="/js/admin.js"></script>
+</body>
+</html>
