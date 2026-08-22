@@ -305,7 +305,10 @@ function wheel(el,vals,idx,onCh){
     if(i!==sel){sel=i;paint();if(navigator.vibrate)navigator.vibrate(3)}
     clearTimeout(tm);tm=setTimeout(()=>{go(sel);if(onCh)onCh(vals[sel].value)},110);
   },{passive:true});
-  requestAnimationFrame(()=>{go(sel);paint()});
+  // シート挿入直後は要素がまだレイアウトされておらずscrollTopが効かないことがあるため、
+  // 即時反映 + 二重rAFでレイアウト確定後に必ず正しい位置へ補正する
+  go(sel);paint();
+  requestAnimationFrame(()=>{go(sel);paint();requestAnimationFrame(()=>{go(sel);paint()})});
   return{
     get:()=>vals[sel].value,
     reset(nv,ni){
