@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { operatorsStore, productsStore, changeRequestsStore, nextId } from "../db.js";
 import { requireOperatorAuth } from "../middleware/auth.js";
-import { sendLarkChangeNotification } from "../lark.js";
+import { sendChangeNotification } from "../notify.js";
 import { applyChangeToMaster } from "../sheets.js";
 
 export const operatorRouter = Router();
@@ -25,24 +25,37 @@ function isValidDate(s) {
   return typeof s === "string" && /^\d{4}-\d{2}-\d{2}$/.test(s) && !Number.isNaN(Date.parse(s));
 }
 
-function buildSummary(type, payload, product) {
+const period = (from, to) => `${from || "未設定"} 〜 ${to || "未設定"}`;
+
+/**
+ * 変更の「変更前」「変更後」を組み立てる。
+ * 通知には変更後だけでなく変更前も載せる（担当者が差分を確認できるようにするため）。
+ * product は呼び出し元で変更後の値に更新済みのため、変更前は before 用の値を別途受け取る。
+ */
+function buildDiff(type, payload, prev) {
   switch (type) {
     case "stock": {
-      if (payload.action === "pause") return `在庫受付を「停止」に変更`;
-      if (payload.action === "resume") return `在庫受付を「再開」に変更`;
+      if (payload.action === "pause") return { before: prev.stockStatus === "paused" ? "停止" : "受付中", after: "停止" };
+      if (payload.action === "resume") return { before: prev.stockStatus === "paused" ? "停止" : "受付中", after: "受付中" };
       const sign = payload.delta > 0 ? "+" : "";
-      return `在庫数を ${sign}${payload.delta} 調整（変更後在庫: ${payload.newStock}）`;
+      return {
+        before: `${prev.stock}`,
+        after: `${payload.newStock}（${sign}${payload.delta}）`,
+      };
     }
     case "price":
-      return `商品代を ${product.price}円 → ${payload.newPrice}円 に変更`;
+      return { before: `${prev.price.toLocaleString()}円`, after: `${payload.newPrice.toLocaleString()}円` };
     case "desiredDate":
-      return `変更希望日: ${payload.desiredDate}（お時間がかかる場合がございます）`;
+      return { before: "—", after: `${payload.desiredDate}（お時間がかかる場合がございます）` };
     case "shippingPeriod":
-      return `発送期間を ${payload.shippingFrom} 〜 ${payload.shippingTo} に変更`;
+      return {
+        before: period(prev.shippingFrom, prev.shippingTo),
+        after: period(payload.shippingFrom, payload.shippingTo),
+      };
     case "acceptPeriod":
-      return `受付期間を ${payload.acceptFrom} 〜 ${payload.acceptTo} に変更`;
+      return { before: period(prev.acceptFrom, prev.acceptTo), after: period(payload.acceptFrom, payload.acceptTo) };
     default:
-      return "";
+      return { before: "", after: "" };
   }
 }
 
@@ -57,6 +70,9 @@ operatorRouter.post("/products/:id/change", async (req, res) => {
   const products = productsStore.read();
   const product = products.find((p) => p.id === productId && p.operatorId === req.operator.id);
   if (!product) return res.status(404).json({ error: "返礼品が見つかりません" });
+
+  // 通知に「変更前」を載せるため、更新する前の値を控えておく
+  const prev = { ...product };
 
   // --- バリデーションと即時反映（画面上の現在値として表示するため） ---
   if (type === "stock") {
@@ -107,7 +123,7 @@ operatorRouter.post("/products/:id/change", async (req, res) => {
   const operators = operatorsStore.read();
   const operator = operators.find((o) => o.id === req.operator.id);
 
-  const summary = buildSummary(type, payload, product);
+  const { before, after } = buildDiff(type, payload, prev);
   const requestedAt = new Date().toISOString();
 
   const changeRequests = changeRequestsStore.read();
@@ -117,8 +133,9 @@ operatorRouter.post("/products/:id/change", async (req, res) => {
     productId: product.id,
     type,
     payload,
-    summary,
-    status: "sent_to_lark",
+    before,
+    after,
+    status: "notified",
     requestedAt,
   };
   changeRequests.push(changeRequest);
@@ -139,28 +156,29 @@ operatorRouter.post("/products/:id/change", async (req, res) => {
       ? `${sheetResult.sheetTitle} ${sheetResult.row}行目を更新（${sheetResult.updatedColumns.join(", ") || "備考のみ"}）`
       : `反映失敗: ${sheetResult.error}`;
 
-  let larkResult = { skipped: true };
+  let notifyResult = { skipped: true };
   try {
-    larkResult = await sendLarkChangeNotification({
+    notifyResult = await sendChangeNotification({
       municipality: operator.municipality,
       operatorName: operator.name,
       operatorId: operator.operatorId,
       productName: product.productName,
       productCode: product.productCode,
       type,
-      summary,
+      before,
+      after,
       masterNote,
       requestedAt: new Date(requestedAt).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" }),
     });
   } catch (err) {
-    console.error("[operator] Lark通知エラー", err);
-    larkResult = { skipped: false, ok: false, error: String(err) };
+    console.error("[operator] 通知エラー", err);
+    notifyResult = { skipped: false, ok: false, error: String(err) };
   }
 
   changeRequest.masterSync = sheetResult;
   changeRequestsStore.write(changeRequests);
 
-  res.json({ ok: true, product, changeRequest, lark: larkResult, master: sheetResult });
+  res.json({ ok: true, product, changeRequest, notify: notifyResult, master: sheetResult });
 });
 
 operatorRouter.get("/change-requests", (req, res) => {

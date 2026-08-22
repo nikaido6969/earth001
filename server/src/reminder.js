@@ -1,6 +1,6 @@
 import { config } from "./config.js";
 import { operatorsStore, productsStore } from "./db.js";
-import { sendLarkExpiryDigest } from "./lark.js";
+import { sendExpiryDigestNotification } from "./notify.js";
 
 /** 日本時間の「今日」を YYYY-MM-DD で返す */
 export function todayJst(now = new Date()) {
@@ -66,7 +66,7 @@ export function findExpiringProducts(today = todayJst()) {
 }
 
 /**
- * 受付終了が近い返礼品のリストをLarkへ通知する。
+ * 受付終了が近い返礼品のリストを通知する。
  * 対象が0件の日は通知しない。
  */
 export async function sendExpiryDigest(today = todayJst()) {
@@ -76,9 +76,9 @@ export async function sendExpiryDigest(today = todayJst()) {
     return { sent: false, count: 0, items };
   }
 
-  const result = await sendLarkExpiryDigest({ today, items, leadDays: config.reminderLeadDays });
+  const result = await sendExpiryDigestNotification({ today, items, leadDays: config.reminderLeadDays });
   console.log(`[reminder] ${today}: ${items.length}件を通知しました`, result);
-  return { sent: true, count: items.length, items, lark: result };
+  return { sent: true, count: items.length, items, notify: result };
 }
 
 /**

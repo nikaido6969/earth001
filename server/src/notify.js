@@ -17,7 +17,7 @@ function signature(timestamp, secret) {
 }
 
 function buildCard(request) {
-  const { municipality, operatorName, operatorId, productName, productCode, type, summary, masterNote, requestedAt } =
+  const { municipality, operatorName, operatorId, productName, productCode, type, before, after, masterNote, requestedAt } =
     request;
   const label = CHANGE_TYPE_LABELS[type] || type;
 
@@ -37,12 +37,54 @@ function buildCard(request) {
         ],
       },
       { tag: "hr" },
-      { tag: "div", text: { tag: "lark_md", content: `**変更内容**\n${summary}` } },
+      {
+        tag: "div",
+        fields: [
+          { is_short: true, text: { tag: "lark_md", content: `**変更前**\n${before}` } },
+          { is_short: true, text: { tag: "lark_md", content: `**変更後**\n${after}` } },
+        ],
+      },
       masterNote ? { tag: "div", text: { tag: "lark_md", content: `**塩尻市マスタ反映**\n${masterNote}` } } : null,
       { tag: "hr" },
       { tag: "note", elements: [{ tag: "plain_text", content: `申請日時: ${requestedAt}` }] },
     ].filter(Boolean),
   };
+}
+
+/** Slack / ログ向けのプレーンテキスト版（Larkカードと同じ内容） */
+function buildChangeText(request) {
+  const { municipality, operatorName, operatorId, productName, productCode, type, before, after, masterNote, requestedAt } =
+    request;
+  const label = CHANGE_TYPE_LABELS[type] || type;
+  return [
+    `*【返礼品変更申請】${label}*`,
+    "",
+    `> 自治体： ${municipality}`,
+    `> 事業者： ${operatorName}（${operatorId}）`,
+    `> 返礼品： ${productName}（${productCode}）`,
+    `> 変更前： ${before}`,
+    `> 変更後： ${after}`,
+    `> 申請日時： ${requestedAt}`,
+    masterNote ? `\n塩尻市マスタ反映： ${masterNote}` : "",
+  ].filter(Boolean).join("\n");
+}
+
+function buildDigestText({ today, items, leadDays }) {
+  const rows = items.map((it) => {
+    const when = it.remainingDays === 0 ? "*本日*" : `${it.remainingDays}日`;
+    const shipping = [it.shippingFrom, it.shippingTo].filter(Boolean).join(" 〜 ") || "未設定";
+    return `| ${when} | ${it.acceptTo} | ${it.operatorName} | ${it.productName}（${it.productCode}） | ${shipping} |`;
+  });
+  return [
+    `*【まもなく受付終了】翌年度の受付確認 ${items.length}件*`,
+    "",
+    `${today} 時点で、受付終了日まで *${leadDays}日以内* の先行予約・期間限定の返礼品です。`,
+    "翌年度の受付開始の準備と、事業者への再掲載受付の承諾確認をお願いします。",
+    "",
+    "| 残り | 受付終了 | 事業者 | 返礼品 | 発送期間 |",
+    "|---|---|---|---|---|",
+    ...rows,
+  ].join("\n");
 }
 
 async function sendViaWebhook(card) {
@@ -139,35 +181,77 @@ function buildDigestCard({ today, items, leadDays }) {
   };
 }
 
-/** 受付終了が近い返礼品のリストをLarkへ通知する */
-export async function sendLarkExpiryDigest(digest) {
-  const card = buildDigestCard(digest);
-  return dispatch(card, "受付終了間近リスト");
+/** Slack へ送信する（Larkが未許可の環境での代替・併用チャンネル） */
+async function sendViaSlack(text) {
+  const res = await fetch("https://slack.com/api/chat.postMessage", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      Authorization: `Bearer ${config.slackBotToken}`,
+    },
+    body: JSON.stringify({ channel: config.slackChannelId, text, mrkdwn: true }),
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok || !json.ok) {
+    console.error("[slack] 送信失敗", res.status, json);
+    return { skipped: false, ok: false, mode: "slack", response: json };
+  }
+  return { skipped: false, ok: true, mode: "slack", ts: json.ts };
 }
 
-/**
- * 変更申請内容をLarkへ送信する。
- * LARK_MODE=app なら指定ユーザーへDM（試験運用: 二階堂さん宛）、
- * LARK_MODE=webhook ならカスタムボットのWebhook（本番: 塩尻市グループ）へ送る。
- * 設定が未完了の場合は送信をスキップする。
- */
-export async function sendLarkChangeNotification(request) {
-  return dispatch(buildCard(request), "変更申請");
+/** 受付終了が近い返礼品のリストを通知する */
+export async function sendExpiryDigestNotification(digest) {
+  return dispatch(buildDigestCard(digest), buildDigestText(digest), "受付終了間近リスト");
 }
 
-/** 設定に応じて DM / Webhook のいずれかで送信する */
-async function dispatch(card, label) {
+/** 変更申請内容を通知する */
+export async function sendChangeNotification(request) {
+  return dispatch(buildCard(request), buildChangeText(request), "変更申請");
+}
+
+/** Lark へ送る（LARK_MODE=app ならDM、webhook ならカスタムボット） */
+async function sendToLark(card, label) {
   if (config.larkMode === "app") {
     if (!config.larkAppId || !config.larkAppSecret || !config.larkReceiveId) {
       console.warn(`[lark] アプリの設定が未完了のため${label}の送信をスキップしました`);
-      return { skipped: true };
+      return { skipped: true, mode: "app" };
     }
     return sendViaApp(card);
   }
-
   if (!config.larkWebhookUrl) {
     console.warn(`[lark] LARK_WEBHOOK_URL が未設定のため${label}の送信をスキップしました`);
-    return { skipped: true };
+    return { skipped: true, mode: "webhook" };
   }
   return sendViaWebhook(card);
+}
+
+/**
+ * NOTIFY_CHANNELS で指定されたすべての宛先へ送信する。
+ *
+ * Larkが組織のネットワークポリシーで許可されるまでの間は slack を使い、
+ * 許可され次第 `NOTIFY_CHANNELS=lark` または `lark,slack` に変えるだけで切り替えられる。
+ */
+async function dispatch(card, text, label) {
+  const results = {};
+
+  for (const channel of config.notifyChannels) {
+    try {
+      if (channel === "lark") {
+        results.lark = await sendToLark(card, label);
+      } else if (channel === "slack") {
+        if (!config.slackBotToken || !config.slackChannelId) {
+          console.warn(`[slack] SLACK_BOT_TOKEN / SLACK_CHANNEL_ID が未設定のため${label}の送信をスキップしました`);
+          results.slack = { skipped: true, mode: "slack" };
+        } else {
+          results.slack = await sendViaSlack(text);
+        }
+      }
+    } catch (err) {
+      console.error(`[${channel}] ${label}の送信でエラー`, err);
+      results[channel] = { skipped: false, ok: false, mode: channel, error: String(err) };
+    }
+  }
+
+  const sent = Object.values(results).filter((r) => r.ok);
+  return { channels: results, ok: sent.length > 0, skipped: sent.length === 0 };
 }

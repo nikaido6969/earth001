@@ -87,6 +87,14 @@ export const config = {
   // 空の場合は、上記キーワードに該当する返礼品を持つ事業者すべてが対象になる。
   targetOperators: csv(process.env.TARGET_OPERATORS, []),
 
+  // --- 通知先 ---
+  // 送信先チャンネル（カンマ区切り。lark / slack）。両方指定すると同じ内容を両方へ送る。
+  // Larkは組織のネットワークポリシーで許可されるまで到達できないため、既定は slack。
+  notifyChannels: csv(process.env.NOTIFY_CHANNELS, ["slack"]),
+  slackBotToken: process.env.SLACK_BOT_TOKEN || "",
+  // 通知先のSlackチャンネルID、またはDMしたい相手のユーザーID
+  slackChannelId: process.env.SLACK_CHANNEL_ID || "",
+
   // --- 受付終了前リマインド ---
   // 受付終了日の何日前から毎日通知するか
   reminderLeadDays: Number(process.env.REMINDER_LEAD_DAYS || 7),

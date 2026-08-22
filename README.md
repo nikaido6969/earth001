@@ -1,7 +1,7 @@
 # 返礼品管理ポータル（事業者向けスマホ管理システム）
 
 ふるさと納税の返礼品を取り扱う事業者が、スマートフォンから簡単に以下の変更申請を行い、
-その内容を Lark（自治体・運営担当者のグループ）へ自動送信するためのシステムです。
+その内容を Slack / Lark（自治体・運営担当者）へ自動送信するためのシステムです。
 まずは **塩尻市で試験導入** することを想定しています。
 
 ## できること
@@ -16,7 +16,7 @@
   - **変更希望日**：年・月・日をスクロールで選択（対応にお時間がかかる旨を明記）
   - **発送期間変更**：開始日・終了日をそれぞれ年月日スクロールで選択
   - **受付期間変更**：開始日・終了日をそれぞれ年月日スクロールで選択
-- 送信すると **Lark に自動通知**（Larkカード形式）され、**同時に塩尻市マスタへも自動反映** されます
+- 送信すると **Slack / Lark に自動通知** され、**同時に塩尻市マスタへも自動反映** されます
 
 ### 塩尻市マスタへの自動反映
 
@@ -76,7 +76,7 @@
 ## 受付終了前の毎日リマインド
 
 **先行予約・期間限定の返礼品**（＝発送期間に記載のある返礼品）について、
-**受付終了日の1週間前から受付終了日当日まで、毎日リストにしてLarkへ通知** します。
+**受付終了日の1週間前から受付終了日当日まで、毎日リストにして通知** します。
 
 目的:
 - 翌年の受付開始の準備をするため
@@ -95,7 +95,7 @@
 
 確認用エンドポイント:
 - `GET /api/admin/expiring?today=YYYY-MM-DD` — 対象一覧を表示（送信しない）
-- `POST /api/admin/send-reminder` — 手動でLarkへ送信
+- `POST /api/admin/send-reminder` — 手動で送信
 
 マスタファイルの列見出しの対応表・サンプルは [`docs/sample_master_template.csv`](docs/sample_master_template.csv) を参照してください。
 
@@ -105,7 +105,7 @@
 cd server
 npm install
 cp .env.example .env
-# .env を編集: JWT_SECRET, ADMIN_PASSWORD, LARK_WEBHOOK_URL を設定
+# .env を編集: JWT_SECRET, ADMIN_PASSWORD, 通知先(SLACK_BOT_TOKEN 等)を設定
 npm start
 ```
 
@@ -117,9 +117,30 @@ npm start
 以下2つは運用開始前に設定が必要です。未設定の場合はその処理をスキップし、ログに警告を出すだけなので、
 設定前でも画面の動作確認はできます。
 
-### 1. Lark 通知
+### 1. 通知（Slack / Lark）
 
-**試験運用（まず二階堂さん宛にDM）** — `LARK_MODE=app`
+`NOTIFY_CHANNELS` で送信先を選びます（カンマ区切りで併用可）。
+
+| 値 | 送信先 |
+| --- | --- |
+| `slack` （既定） | Slackのチャンネル、または担当者へのDM |
+| `lark` | Larkのグループ（Webhook）、または担当者へのDM（アプリ） |
+| `lark,slack` | 両方へ同じ内容を送信 |
+
+**現在 Lark は組織のネットワークポリシーで遮断されています。**
+`njpeyw9zsu29.jp.larksuite.com` / `open.larksuite.com` / `open.feishu.cn` のいずれも
+プロキシが CONNECT に 403 を返すため到達できません。そのため既定を `slack` にしています。
+Larkのドメインが許可され次第、`NOTIFY_CHANNELS=lark` に変えるだけで切り替わります（コード変更は不要）。
+
+**Slack** — `chat:write` スコープを持つBotトークンを発行して設定します。
+
+```
+NOTIFY_CHANNELS=slack
+SLACK_BOT_TOKEN=xoxb-...
+SLACK_CHANNEL_ID=U0AGK5Z6BBL   # チャンネルID、またはDM相手のユーザーID
+```
+
+**Lark・試験運用（担当者宛にDM）** — `LARK_MODE=app`
 
 1. [Lark開発者コンソール](https://open.larksuite.com/app) でアプリを作成
 2. 権限に `im:message`（メッセージ送信）を追加して公開・承認
@@ -133,7 +154,7 @@ npm start
 1. 塩尻市のLarkグループに「カスタムボット」を追加し、Webhook URL を発行
 2. `.env` の `LARK_WEBHOOK_URL`（必要なら `LARK_WEBHOOK_SECRET`）に設定し、`LARK_MODE=webhook` に変更
 
-通知カードには、自治体名 / 事業者名・ID / 返礼品名・コード / 変更種別 / 変更内容 /
+通知には、自治体名 / 事業者名・ID / 返礼品名・コード / 変更種別 / **変更前・変更後** /
 **塩尻市マスタへの反映結果** / 申請日時 が含まれます。
 
 ### 2. 塩尻市マスタ（Googleスプレッドシート）への書き込み
@@ -162,7 +183,7 @@ npm start
 C列の備考に更新前の値が残るため、担当者は後から変更履歴を追え、必要なら元の値に戻せます。
 
 なお、受付期間・変更希望日は返礼品マスタに対応する列がないため、C列の備考への記録と
-Lark通知のみを行い、実際の反映は担当者の対応となります。
+通知のみを行い、実際の反映は担当者の対応となります。
 
 ## ディレクトリ構成
 
@@ -171,7 +192,7 @@ server/            Node.js (Express) API サーバー
   src/
     routes/         認証・事業者用・管理用の各API
     utils/          マスタ取込・パスワード発行ユーティリティ
-    lark.js         Lark Webhook送信
+    notify.js       Slack / Lark への通知送信
     db.js           JSONファイルベースの簡易DB
   data/             実行時に生成されるデータ（.gitignore対象）
 web/                フロントエンド（静的ファイル、ビルド不要）
