@@ -1,0 +1,485 @@
+<title>塩尻市 返礼品管理ポータル</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap">
+<style>
+:root{
+  --paper:#F5F7F3; --surface:#FFFFFF; --surface-2:#FAFBF8;
+  --ink:#16211B; --muted:#66756C; --line:#E1E7DE;
+  --brand:#2C6E49; --brand-deep:#1D5236; --brand-soft:#E6F0E8;
+  --plum:#7A3E5D; --plum-soft:#F6EAF0;
+  --amber:#8A5D0E; --amber-soft:#FBF0D9; --amber-line:#DFC178;
+  --danger:#A8342A; --danger-soft:#FBE9E6;
+  --shadow:0 1px 3px rgba(22,33,27,.07),0 8px 24px rgba(22,33,27,.05);
+  --r:15px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#10140F; --surface:#191E17; --surface-2:#1F251D;
+    --ink:#E9EFE5; --muted:#95A296; --line:#2C342A;
+    --brand:#5BAA7D; --brand-deep:#7BC498; --brand-soft:#1E2C22;
+    --plum:#D294B2; --plum-soft:#2B1F26;
+    --amber:#D9AE5A; --amber-soft:#2A2417; --amber-line:#5C4A22;
+    --danger:#E2887E; --danger-soft:#2C1B19;
+    --shadow:0 1px 3px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.3);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#10140F; --surface:#191E17; --surface-2:#1F251D;
+  --ink:#E9EFE5; --muted:#95A296; --line:#2C342A;
+  --brand:#5BAA7D; --brand-deep:#7BC498; --brand-soft:#1E2C22;
+  --plum:#D294B2; --plum-soft:#2B1F26;
+  --amber:#D9AE5A; --amber-soft:#2A2417; --amber-line:#5C4A22;
+  --danger:#E2887E; --danger-soft:#2C1B19;
+  --shadow:0 1px 3px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.3);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:"Zen Kaku Gothic New","Hiragino Sans","Noto Sans JP",system-ui,sans-serif;
+  font-feature-settings:"palt" 1; -webkit-text-size-adjust:100%;
+  font-variant-numeric:tabular-nums;
+}
+button,input{font-family:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-radius:6px}
+.hide{display:none!important}
+
+/* ---- login ---- */
+.login{min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:24px}
+.lcard{width:100%;max-width:352px;background:var(--surface);border-radius:20px;padding:30px 24px;box-shadow:var(--shadow)}
+.mark{width:34px;height:34px;border-radius:9px;background:var(--brand);display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+.mark span{color:#fff;font-weight:900;font-size:17px;line-height:1}
+.lcard h1{font-size:20px;margin:0 0 4px;font-weight:900;letter-spacing:.01em}
+.eyebrow{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:0 0 18px}
+label{display:block;font-size:11.5px;color:var(--muted);margin:15px 0 6px;font-weight:500}
+input{width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:11px;font-size:16px;background:var(--surface-2);color:var(--ink)}
+input:focus{border-color:var(--brand);outline:none;background:var(--surface)}
+.btn{width:100%;border:0;border-radius:11px;padding:14px;font-size:15px;font-weight:700}
+.btn-p{background:var(--brand);color:#fff;margin-top:20px}
+.btn-p:active{background:var(--brand-deep)}
+.btn-p:disabled{opacity:.5}
+.btn-s{background:var(--surface-2);color:var(--ink);border:1px solid var(--line)}
+.err{color:var(--danger);font-size:12px;margin-top:12px;min-height:16px;line-height:1.6}
+.foot{font-size:11px;color:var(--muted);text-align:center;margin:18px 0 0;line-height:1.7}
+
+/* ---- app ---- */
+header{position:sticky;top:0;z-index:20;background:var(--brand);color:#fff;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+header h1{font-size:15.5px;margin:0;font-weight:700;line-height:1.35}
+header .sub{font-size:10.5px;opacity:.86;margin-top:3px;letter-spacing:.02em}
+.logout{background:rgba(255,255,255,.16);border:0;color:#fff;padding:7px 12px;border-radius:99px;font-size:11px;flex:none;font-weight:500}
+.wrap{max-width:520px;margin:0 auto;padding:14px 14px 80px}
+.tabs{display:flex;gap:6px;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:4px;margin-bottom:14px}
+.tab{flex:1;padding:9px 4px;border:0;background:transparent;border-radius:9px;font-size:12px;color:var(--muted);font-weight:500}
+.tab.on{background:var(--surface);color:var(--brand-deep);font-weight:700;box-shadow:0 1px 2px rgba(22,33,27,.08)}
+
+.card{background:var(--surface);border-radius:var(--r);padding:15px;margin-bottom:12px;box-shadow:var(--shadow)}
+.pn{font-size:15px;font-weight:700;line-height:1.45}
+.pc{font-size:11px;color:var(--muted);margin-top:4px;letter-spacing:.02em}
+.pill{display:inline-block;font-size:10px;padding:3px 9px;border-radius:99px;margin-left:6px;vertical-align:2px;font-weight:700;letter-spacing:.02em}
+.p-on{background:var(--brand-soft);color:var(--brand-deep)}
+.p-off{background:var(--danger-soft);color:var(--danger)}
+.p-req{background:var(--plum-soft);color:var(--plum)}
+.p-due{background:var(--amber-soft);color:var(--amber)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0 0;font-size:10.5px;color:var(--muted);letter-spacing:.03em}
+.grid b{display:block;color:var(--ink);font-size:13.5px;font-weight:700;margin-top:2px;letter-spacing:0}
+.grid .req{color:var(--plum)}
+.acts{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
+.chip{flex:1 1 calc(50% - 7px);min-width:134px;border:1px solid var(--line);background:var(--surface-2);border-radius:10px;padding:11px 6px;font-size:12px;color:var(--ink);font-weight:500}
+.chip:active{background:var(--brand-soft);border-color:var(--brand)}
+
+/* ---- sheet ---- */
+.back{position:fixed;inset:0;background:rgba(10,16,12,.5);z-index:60;display:flex;align-items:flex-end}
+.sheet{background:var(--surface);width:100%;max-height:90dvh;overflow-y:auto;border-radius:20px 20px 0 0;padding:8px 17px 26px;animation:up .24s cubic-bezier(.2,.8,.3,1)}
+@keyframes up{from{transform:translateY(26px);opacity:.6}to{transform:translateY(0);opacity:1}}
+@media (prefers-reduced-motion:reduce){.sheet{animation:none}}
+.grip{width:36px;height:4px;border-radius:99px;background:var(--line);margin:0 auto 14px}
+.sheet h2{font-size:15px;margin:0 0 5px;font-weight:700;line-height:1.45}
+.hint{color:var(--muted);font-size:11.5px;margin:0 0 15px;line-height:1.75}
+.hint b{color:var(--ink)}
+.sact{display:flex;gap:9px;margin-top:18px}
+.sact .btn{margin-top:0}
+.secl{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:16px 0 7px}
+
+/* ---- wheel ---- */
+.wg{display:flex;gap:5px}
+.wc{flex:1;min-width:0}
+.wl{text-align:center;font-size:10px;color:var(--muted);margin-top:5px;letter-spacing:.05em}
+.wp{position:relative;overflow-y:scroll;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;scrollbar-width:none;height:200px;touch-action:pan-y}
+.wp::-webkit-scrollbar{display:none}
+.wi{scroll-snap-align:center;display:flex;align-items:center;justify-content:center;height:40px;font-size:16px;color:var(--muted);transition:color .12s,font-size .12s}
+.wi.on{color:var(--brand-deep);font-weight:700;font-size:17.5px}
+.wh{position:absolute;left:0;right:0;top:50%;height:40px;transform:translateY(-50%);border-top:1px solid var(--brand);border-bottom:1px solid var(--brand);pointer-events:none;background:color-mix(in srgb,var(--brand) 7%,transparent)}
+.preview{text-align:center;font-size:16px;font-weight:900;margin-top:14px;color:var(--brand-deep)}
+
+/* ---- log ---- */
+.pre{background:var(--surface-2);border:1px solid var(--line);border-left:3px solid var(--brand);border-radius:10px;padding:11px 12px;font-size:11.5px;line-height:1.85;white-space:pre-wrap;word-break:break-word;color:var(--ink)}
+.pre.master{border-left-color:var(--amber-line);background:var(--amber-soft)}
+.yellow{background:#FCE96A;color:#3A2E00;padding:1px 5px;border-radius:3px;font-weight:700}
+.empty{text-align:center;color:var(--muted);font-size:12.5px;padding:52px 16px;line-height:1.9}
+.note{font-size:11px;color:var(--muted);line-height:1.85;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:13px;margin-top:12px}
+.due-head{background:var(--amber-soft);border:1px solid var(--amber-line);border-radius:12px;padding:13px;font-size:11.5px;line-height:1.85;color:var(--amber);margin-bottom:13px}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:12px 18px;border-radius:99px;font-size:12.5px;z-index:100;opacity:0;transition:opacity .25s;max-width:90vw;text-align:center;pointer-events:none;line-height:1.6;box-shadow:var(--shadow)}
+.toast.on{opacity:1}
+</style>
+
+<div id="login" class="login">
+  <div class="lcard">
+    <div class="mark"><span>塩</span></div>
+    <p class="eyebrow">Shiojiri&nbsp;City · Trial</p>
+    <h1>返礼品管理ポータル</h1>
+    <p class="foot" style="text-align:left;margin:6px 0 0">事業者さま向け・スマートフォン対応</p>
+    <form id="lf">
+      <label for="oid">事業者ID</label>
+      <input id="oid" autocomplete="username" autocapitalize="characters" inputmode="latin" required>
+      <label for="pw">パスワード</label>
+      <input id="pw" type="password" autocomplete="current-password" required>
+      <button class="btn btn-p" id="lb" type="submit">ログイン</button>
+      <div class="err" id="le" role="alert"></div>
+    </form>
+    <p class="foot">一度ログインすると、次回からIDとパスワードの入力は不要です</p>
+  </div>
+</div>
+
+<div id="app" class="hide">
+  <header>
+    <div>
+      <h1 id="on">返礼品管理ポータル</h1>
+      <div class="sub" id="om"></div>
+    </div>
+    <button class="logout" id="lo">ログアウト</button>
+  </header>
+  <div class="wrap">
+    <div class="tabs" role="tablist">
+      <button class="tab on" data-t="list">返礼品</button>
+      <button class="tab" data-t="due">受付終了間近</button>
+      <button class="tab" data-t="log">送信済み<span id="lc"></span></button>
+    </div>
+    <div id="list"></div>
+    <div id="due" class="hide"></div>
+    <div id="log" class="hide"></div>
+  </div>
+</div>
+
+<div id="back" class="back hide"><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const TK='sjr_session',PD='sjr_pending',LG='sjr_log';
+
+/* ============ 事業者アカウント（試験用） ============ */
+const ACCOUNTS=[
+ {id:'TEST01',name:'テスト事業者（二階堂）',h:'89929e419c1a23c0a2e36a214cfcb593c002dc020c4078721d0132ff774c70d4'},
+ {id:'SJR001',name:'株式会社ベジサコ',h:'6d4665c4ee5df14f6aba44b602b607566f7005189d29eeca429be8563b2bbeb5'},
+ {id:'SJR002',name:'上條農園',h:'affa6e6a4c9617973a79cd1025c9e6afb577f0d48868fd646b4036b98b28fac1'},
+ {id:'SJR003',name:'有限会社 野村農場（米）',h:'565c1f4e7621fad88095e0b6b0c328e090b17c245fd89865c2c758dcd32edf1b'},
+ {id:'SJR004',name:'株式会社アクアファームくるめ',h:'36d06dd95397141ed89b6ab47cea333c816ca00cccbd389777ea9633eb5f41dd'},
+ {id:'SJR005',name:'生産者直売所 アルプス市場',h:'b5913fd5b4418ad0dcf1775d3e8a941fe65ba16f541966a8f884a879d9daeca0'}
+];
+
+/* ============ 返礼品（塩尻市マスタ 返礼品マスタ より抽出） ============ */
+const V=[
+ ['G01','デラウェア 5〜7房',4500,30,'2026-08-01','2026-08-31','2026-06-01','2026-08-25'],
+ ['G03','クイーンルージュ（2房）',5500,40,'2026-09-10','2026-10-10','2026-06-01','2026-08-22'],
+ ['G04-2411','シャインマスカット 2房',5000,50,'2026-09-01','2026-10-20','2026-06-01','2026-08-27'],
+ ['G06-2411','種なし巨峰 2房',4500,35,'2026-09-01','2026-09-30','2026-06-01','2026-08-29'],
+ ['G07R611','南水 5kg',4500,40,'2026-09-20','2026-10-20','2026-06-01','2026-08-24'],
+ ['G09','サンふじ・シナノゴールド',5000,60,'2026-11-20','2026-12-25','2026-08-01','2026-11-30'],
+ ['G10R6','シナノスイート',4500,55,'2026-10-05','2026-11-05','2026-08-01','2026-10-25'],
+ ['G11R6','ぐんま名月',4800,25,'2026-10-25','2026-11-25','2026-08-01','2026-11-15'],
+ ['G12R6','シナノゴールド',4500,45,'2026-11-01','2026-12-01','2026-08-01','2026-11-20'],
+ ['G13R611','サンふじ',4500,80,'2026-11-20','2026-12-25','2026-08-01','2026-08-28'],
+ ['G17','ピオーネ',5000,20,'2026-09-05','2026-10-05','2026-06-01','2026-09-25'],
+ ['G19','豊水',4000,30,'2026-08-25','2026-09-20','2026-06-01','2026-09-10'],
+ ['G20','幸水',4000,30,'2026-08-10','2026-09-05','2026-06-01','2026-08-30'],
+ ['G21','ナガノパープル',6000,20,'2026-09-05','2026-10-05','2026-06-01','2026-08-30'],
+ ['G22','旬のおまかせりんご（シナノゴールド・シナノスイート・ぐんま名月）',5000,40,'2026-10-10','2026-11-30','2026-08-01','2026-11-20']
+];
+const mk=(o,r)=>({operatorId:o,productCode:r[0],productName:r[1],price:r[2],stock:r[3],stockStatus:'active',shippingFrom:r[4],shippingTo:r[5],acceptFrom:r[6],acceptTo:r[7]});
+const PRODUCTS=[
+ ...V.map(r=>mk('TEST01',r)),
+ ...V.map(r=>mk('SJR001',r)),
+ mk('SJR002',['B01','ながいも 5kg',4000,60,'','','2026-08-01','2027-03-31']),
+ mk('SJR002',['B04','長野県産 コシヒカリ 2kg（無洗米）長芋 3kg のセット',4000,100,'','','2026-08-01','2027-03-31']),
+ mk('SJR003',['N01','白米 約5kg',4000,120,'','','2026-08-01','2027-03-31']),
+ mk('SJR003',['N02','白米 約10kg（約5kg×2袋）',7500,80,'','','2026-08-01','2027-03-31']),
+ mk('SJR003',['N03','玄米',4000,50,'','','2026-08-01','2027-03-31']),
+ mk('SJR004',['Q01','塩尻市産 シャインマスカット1.8kg',5000,40,'2026-09-01','2026-10-15','2026-06-01','2026-08-26']),
+ mk('SJR004',['Q02','【家庭用】塩尻市産 シャインマスカット1.8kg（2房〜5房）',4500,35,'2026-09-01','2026-10-15','2026-06-01','2026-08-26']),
+ mk('SJR005',['A01','おまかせ野菜セット 2〜3人前',3000,25,'','','2026-08-01','2027-03-31']),
+ mk('SJR005',['A02','【ご家庭用】シャインマスカットの入ったお任せぶどうセット',4500,30,'2026-09-30','2026-10-20','2026-06-01','2026-08-23']),
+ mk('SJR005',['A03','【ご家庭用】シャインマスカット 2kg',5000,20,'2026-09-30','2026-10-20','2026-06-01','2026-08-23'])
+].map((x,i)=>({id:i+1,...x}));
+
+const LABELS={stock:'在庫調整',price:'商品代変更',desiredDate:'変更希望日',shippingPeriod:'発送期間変更',acceptPeriod:'受付期間変更'};
+const COLS={stock:'T列 在庫数',price:'Y列 精算額',shippingPeriod:'AE列 発送開始日 ／ AF列 発送終了日',acceptPeriod:'対応列なし（C列 備考のみ）',desiredDate:'対応列なし（C列 備考のみ）'};
+
+let session=null,products=[],pending={},sentLog=[];
+try{pending=JSON.parse(localStorage.getItem(PD)||'{}')}catch(e){}
+try{sentLog=JSON.parse(localStorage.getItem(LG)||'[]')}catch(e){}
+
+function toast(m,ms){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('on'),ms||3000)}
+async function sha(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+
+/* ============ ホイールピッカー ============ */
+const IH=40,PADN=2;
+function wheel(el,vals,idx,onCh){
+  el.className='wp';el.innerHTML='';
+  const list=document.createElement('div');
+  const pad=()=>{const d=document.createElement('div');d.style.height=(IH*PADN)+'px';d.style.flex='none';return d};
+  list.appendChild(pad());
+  const add=(v,i)=>{const d=document.createElement('div');d.className='wi';d.textContent=v.label;d.dataset.i=i;return d};
+  vals.forEach((v,i)=>list.appendChild(add(v,i)));
+  list.appendChild(pad());
+  el.appendChild(list);
+  const hl=document.createElement('div');hl.className='wh';el.appendChild(hl);
+  let sel=Math.max(0,Math.min(idx,vals.length-1)),tm=null;
+  function paint(){list.querySelectorAll('.wi').forEach(d=>{const i=+d.dataset.i;d.classList.toggle('on',i===sel);d.style.opacity=Math.max(.3,1-Math.abs(i-sel)*.3)})}
+  function go(i){el.scrollTop=i*IH}
+  el.addEventListener('scroll',()=>{
+    const i=Math.max(0,Math.min(Math.round(el.scrollTop/IH),vals.length-1));
+    if(i!==sel){sel=i;paint();if(navigator.vibrate)navigator.vibrate(3)}
+    clearTimeout(tm);tm=setTimeout(()=>{go(sel);if(onCh)onCh(vals[sel].value)},110);
+  },{passive:true});
+  requestAnimationFrame(()=>{go(sel);paint()});
+  return{
+    get:()=>vals[sel].value,
+    reset(nv,ni){
+      vals=nv;list.querySelectorAll('.wi').forEach(n=>n.remove());
+      const f=document.createDocumentFragment();nv.forEach((v,i)=>f.appendChild(add(v,i)));
+      list.insertBefore(f,list.lastChild);
+      sel=Math.max(0,Math.min(ni,nv.length-1));go(sel);paint();
+    }};
+}
+const rng=(a,b)=>{const o=[];for(let i=a;i<=b;i++)o.push(i);return o};
+const dim=(y,m)=>new Date(y,m,0).getDate();
+const p2=n=>String(n).padStart(2,'0');
+
+function dateWheel(host,iso){
+  const t=new Date(),y0=t.getFullYear(),y1=y0+2;
+  let d=iso?new Date(iso):t; if(isNaN(d.getTime()))d=t;
+  const st={y:Math.min(Math.max(d.getFullYear(),y0),y1),m:d.getMonth()+1,d:d.getDate()};
+  host.className='wg';
+  host.innerHTML='<div class="wc"><div></div><div class="wl">年</div></div><div class="wc"><div></div><div class="wl">月</div></div><div class="wc"><div></div><div class="wl">日</div></div>';
+  const c=host.querySelectorAll('.wc>div:first-child');
+  let dw;
+  const refresh=()=>{const mx=dim(st.y,st.m);if(st.d>mx)st.d=mx;dw.reset(rng(1,mx).map(v=>({value:v,label:v+'日'})),st.d-1)};
+  wheel(c[0],rng(y0,y1).map(v=>({value:v,label:v+'年'})),st.y-y0,v=>{st.y=v;refresh()});
+  wheel(c[1],rng(1,12).map(v=>({value:v,label:v+'月'})),st.m-1,v=>{st.m=v;refresh()});
+  dw=wheel(c[2],rng(1,dim(st.y,st.m)).map(v=>({value:v,label:v+'日'})),st.d-1,v=>{st.d=v});
+  return{get:()=>st.y+'-'+p2(st.m)+'-'+p2(st.d)};
+}
+
+/* ============ 表示 ============ */
+const eff=(p,f)=>(pending[p.id]&&pending[p.id][f]!=null)?pending[p.id][f]:p[f];
+const fd=v=>v||'未設定';
+const today=()=>new Date(Date.now()+9*3600000).toISOString().slice(0,10);
+const daysTo=iso=>Math.round((Date.parse(iso+'T00:00:00Z')-Date.parse(today()+'T00:00:00Z'))/86400000);
+
+function render(){
+  const el=$('#list');
+  if(!products.length){el.innerHTML='<div class="empty">取り扱い返礼品がありません。<br>自治体のご担当者へお問い合わせください。</div>';return}
+  el.innerHTML=products.map(p=>{
+    const st=eff(p,'stockStatus'),pp=pending[p.id]||{};
+    return '<div class="card"><div class="pn">'+esc(p.productName)+
+      '<span class="pill '+(st==='paused'?'p-off':'p-on')+'">'+(st==='paused'?'受付停止中':'受付中')+'</span></div>'+
+      '<div class="pc">商品コード '+esc(p.productCode)+'</div>'+
+      '<div class="grid">'+
+        '<div>在庫数<b'+(pp.stock!=null?' class="req"':'')+'>'+eff(p,'stock')+'</b></div>'+
+        '<div>商品代<b'+(pp.price?' class="req"':'')+'>'+Number(eff(p,'price')).toLocaleString()+'円</b></div>'+
+        '<div>発送期間<b'+(pp.shippingFrom?' class="req"':'')+'>'+fd(eff(p,'shippingFrom'))+'<br>〜 '+fd(eff(p,'shippingTo'))+'</b></div>'+
+        '<div>受付期間<b'+(pp.acceptFrom?' class="req"':'')+'>'+fd(eff(p,'acceptFrom'))+'<br>〜 '+fd(eff(p,'acceptTo'))+'</b></div>'+
+      '</div>'+
+      (pp.desiredDate?'<div class="pc" style="margin-top:10px"><span class="pill p-req">変更希望日 申請中</span> '+pp.desiredDate+'</div>':'')+
+      '<div class="acts">'+
+        '<button class="chip" data-a="stock" data-id="'+p.id+'">在庫を増減する</button>'+
+        '<button class="chip" data-a="toggle" data-id="'+p.id+'">'+(st==='paused'?'受付を再開する':'受付を停止する')+'</button>'+
+        '<button class="chip" data-a="price" data-id="'+p.id+'">商品代を変更する</button>'+
+        '<button class="chip" data-a="desiredDate" data-id="'+p.id+'">変更希望日を伝える</button>'+
+        '<button class="chip" data-a="shippingPeriod" data-id="'+p.id+'">発送期間を変更する</button>'+
+        '<button class="chip" data-a="acceptPeriod" data-id="'+p.id+'">受付期間を変更する</button>'+
+      '</div></div>';
+  }).join('');
+}
+
+function renderDue(){
+  const lead=7;
+  const items=products.filter(p=>{
+    const sf=eff(p,'shippingFrom'),stt=eff(p,'shippingTo'),at=eff(p,'acceptTo');
+    if(!sf&&!stt)return false; if(!at)return false;
+    const d=daysTo(at); return d>=0&&d<=lead;
+  }).map(p=>({p,d:daysTo(eff(p,'acceptTo'))})).sort((a,b)=>a.d-b.d);
+
+  $('#due').innerHTML=
+   '<div class="due-head"><b>受付終了間近のお知らせ</b><br>'+
+   '先行予約・期間限定の返礼品（発送期間の記載があるもの）について、受付終了日の1週間前から当日まで毎日ご案内します。'+
+   '翌年の受付開始の準備と、再掲載受付のご承諾のため、内容をご確認ください。<br>'+
+   '<span style="opacity:.8">基準日 '+today()+'</span></div>'+
+   (items.length?items.map(({p,d})=>
+     '<div class="card"><div class="pn">'+esc(p.productName)+
+     '<span class="pill p-due">'+(d===0?'本日が受付終了日':'残り '+d+'日')+'</span></div>'+
+     '<div class="pc">商品コード '+esc(p.productCode)+'</div>'+
+     '<div class="grid"><div>受付終了日<b>'+eff(p,'acceptTo')+'</b></div>'+
+     '<div>発送期間<b>'+fd(eff(p,'shippingFrom'))+'<br>〜 '+fd(eff(p,'shippingTo'))+'</b></div></div></div>'
+   ).join(''):'<div class="empty">受付終了が1週間以内に迫っている<br>先行予約・期間限定の返礼品はありません。</div>');
+}
+
+function renderLog(){
+  $('#lc').textContent=sentLog.length?' '+sentLog.length:'';
+  const el=$('#log');
+  if(!sentLog.length){el.innerHTML='<div class="empty">まだ送信した変更はありません。<br>「返礼品」から変更を送信してみてください。</div>';return}
+  el.innerHTML=sentLog.map(c=>
+    '<div class="card"><div class="pn" style="font-size:14px">'+esc(c.typeLabel)+'</div>'+
+    '<div class="pc">'+esc(c.productName)+' ／ '+esc(c.productCode)+'</div>'+
+    '<div class="pc" style="margin-top:6px">'+esc(c.requestedAt)+'</div>'+
+    '<div class="secl">Larkへ送信する内容</div><div class="pre">'+esc(c.lark)+'</div>'+
+    '<div class="secl">塩尻市マスタへの反映</div><div class="pre master">反映先： '+esc(c.column)+
+      '\n該当セルは<span class="yellow">黄色で塗りつぶし</span>\n\nC列 備考へ追記：\n'+esc(c.remark)+'</div></div>'
+  ).join('')+
+  '<div class="note">この試験版は、送信内容の確認までを行います。Larkの通信許可とGoogleサービスアカウントを設定すると、実際にLarkへ送信され、塩尻市マスタのセルが更新されます。</div>';
+}
+
+/* ============ 操作 ============ */
+function open(h){$('#sheet').innerHTML='<div class="grip"></div>'+h;$('#back').classList.remove('hide')}
+function close(){$('#back').classList.add('hide');$('#sheet').innerHTML=''}
+$('#back').addEventListener('click',e=>{if(e.target===$('#back'))close()});
+const FOOT='<div class="sact"><button class="btn btn-s" id="cx">キャンセル</button><button class="btn btn-p" id="ok" style="margin-top:0">この内容で送信</button></div>';
+
+document.addEventListener('click',e=>{
+  const b=e.target.closest('.chip');if(!b)return;
+  const p=products.find(x=>x.id===+b.dataset.id),a=b.dataset.a;
+  if(a==='toggle'){
+    const paused=eff(p,'stockStatus')==='paused';
+    if(!confirm(paused?'受付を再開します。よろしいですか？':'受付を停止します。よろしいですか？'))return;
+    return submit(p,'stock',{action:paused?'resume':'pause'});
+  }
+  if(a==='stock')return shStock(p);
+  if(a==='price')return shPrice(p);
+  if(a==='desiredDate')return shDate(p);
+  if(a==='shippingPeriod')return shPeriod(p,'shippingPeriod','発送期間の変更','shippingFrom','shippingTo');
+  if(a==='acceptPeriod')return shPeriod(p,'acceptPeriod','受付期間の変更','acceptFrom','acceptTo');
+});
+
+function shStock(p){
+  const cur=Number(eff(p,'stock'));
+  open('<h2>在庫を増減する</h2><p class="hint">'+esc(p.productName)+'<br>現在の在庫数 <b>'+cur+'</b><br>スクロールして増減数を選び、送信してください。</p><div id="w"></div><div class="preview" id="pv"></div>'+FOOT);
+  const upd=v=>$('#pv').textContent='変更後の在庫数 '+Math.max(0,cur+v);
+  const w=wheel($('#w'),rng(-100,100).map(v=>({value:v,label:(v>0?'+':'')+v+'個'})),100,upd);
+  upd(0);
+  $('#cx').onclick=close;
+  $('#ok').onclick=()=>{const d=w.get();if(!d)return toast('増減数を選んでください');submit(p,'stock',{action:'adjust',delta:d})};
+}
+function shPrice(p){
+  const cur=Number(eff(p,'price'));
+  open('<h2>商品代を変更する</h2><p class="hint">'+esc(p.productName)+'<br>現在の商品代 <b>'+cur.toLocaleString()+'円</b><br>スクロールして金額を選び、送信してください。</p>'+
+   '<div class="wg"><div class="wc"><div id="w1"></div><div class="wl">万円</div></div><div class="wc"><div id="w2"></div><div class="wl">千円</div></div><div class="wc"><div id="w3"></div><div class="wl">百円</div></div></div><div class="preview" id="pv"></div>'+FOOT);
+  const upd=()=>$('#pv').textContent='変更後の商品代 '+(w1.get()*10000+w2.get()*1000+w3.get()*100).toLocaleString()+'円';
+  const w1=wheel($('#w1'),rng(0,30).map(v=>({value:v,label:''+v})),Math.floor(cur/10000),upd);
+  const w2=wheel($('#w2'),rng(0,9).map(v=>({value:v,label:''+v})),Math.floor(cur%10000/1000),upd);
+  const w3=wheel($('#w3'),rng(0,9).map(v=>({value:v,label:''+v})),Math.floor(cur%1000/100),upd);
+  upd();
+  $('#cx').onclick=close;
+  $('#ok').onclick=()=>{const v=w1.get()*10000+w2.get()*1000+w3.get()*100;if(v<=0)return toast('金額を選んでください');submit(p,'price',{newPrice:v})};
+}
+function shDate(p){
+  open('<h2>変更希望日を伝える</h2><p class="hint">'+esc(p.productName)+'<br>スクロールして年・月・日を選び、送信してください。<br>※ご希望に沿えるまで、お時間がかかる場合がございます。</p><div id="w"></div>'+FOOT);
+  const w=dateWheel($('#w'),(pending[p.id]||{}).desiredDate);
+  $('#cx').onclick=close;
+  $('#ok').onclick=()=>submit(p,'desiredDate',{desiredDate:w.get()});
+}
+function shPeriod(p,type,title,ff,tf){
+  open('<h2>'+title+'</h2><p class="hint">'+esc(p.productName)+'<br>スクロールして開始日と終了日を選び、送信してください。</p>'+
+   '<div class="secl">開始日</div><div id="wa"></div><div class="secl">終了日</div><div id="wb"></div>'+FOOT);
+  const a=dateWheel($('#wa'),eff(p,ff)),b=dateWheel($('#wb'),eff(p,tf));
+  $('#cx').onclick=close;
+  $('#ok').onclick=()=>{const f=a.get(),t=b.get();if(f>t)return toast('開始日は終了日より前にしてください');submit(p,type,{from:f,to:t})};
+}
+
+function submit(p,type,pl){
+  let summary='',before='',after='';
+  if(type==='stock'){
+    if(pl.action==='adjust'){
+      const ns=Math.max(0,Number(eff(p,'stock'))+pl.delta);
+      before=String(eff(p,'stock'));after=String(ns);
+      summary='在庫数を '+(pl.delta>0?'+':'')+pl.delta+' 調整（'+before+' → '+after+'）';
+    }else{
+      before=eff(p,'stockStatus')==='paused'?'停止':'受付中';
+      after=pl.action==='pause'?'停止':'受付中';
+      summary='在庫受付を「'+after+'」に変更';
+    }
+  }else if(type==='price'){
+    before=Number(eff(p,'price')).toLocaleString()+'円';after=pl.newPrice.toLocaleString()+'円';
+    summary='商品代を '+before+' → '+after+' に変更';
+  }else if(type==='desiredDate'){
+    before='—';after=pl.desiredDate;
+    summary='変更希望日 '+pl.desiredDate+'（お時間がかかる場合がございます）';
+  }else{
+    const ff=type==='shippingPeriod'?'shippingFrom':'acceptFrom',tf=type==='shippingPeriod'?'shippingTo':'acceptTo';
+    before=fd(eff(p,ff))+' 〜 '+fd(eff(p,tf));after=pl.from+' 〜 '+pl.to;
+    summary=(type==='shippingPeriod'?'発送期間':'受付期間')+'を '+after+' に変更';
+  }
+
+  const at=new Date().toLocaleString('ja-JP',{timeZone:'Asia/Tokyo'});
+  const rec={typeLabel:LABELS[type],productName:p.productName,productCode:p.productCode,requestedAt:at,column:COLS[type],
+    lark:'【返礼品変更申請】'+LABELS[type]+'\n自治体： 塩尻市\n事業者： '+session.name+'（'+session.id+'）\n返礼品： '+p.productName+'（'+p.productCode+'）\n変更内容： '+summary+'\n申請日時： '+at,
+    remark:'['+at+'] '+session.name+' がポータルから変更 ／ '+LABELS[type]+'： '+before+' → '+after};
+
+  const pp=pending[p.id]||(pending[p.id]={});
+  if(type==='stock'){
+    if(pl.action==='adjust')pp.stock=Math.max(0,Number(eff(p,'stock'))+pl.delta);
+    else pp.stockStatus=pl.action==='pause'?'paused':'active';
+  }else if(type==='price')pp.price=pl.newPrice;
+  else if(type==='desiredDate')pp.desiredDate=pl.desiredDate;
+  else if(type==='shippingPeriod'){pp.shippingFrom=pl.from;pp.shippingTo=pl.to}
+  else if(type==='acceptPeriod'){pp.acceptFrom=pl.from;pp.acceptTo=pl.to}
+
+  try{localStorage.setItem(PD,JSON.stringify(pending))}catch(e){}
+  sentLog.unshift(rec);
+  try{localStorage.setItem(LG,JSON.stringify(sentLog.slice(0,60)))}catch(e){}
+
+  close();render();renderDue();renderLog();
+  toast('送信しました　'+summary,3600);
+  if(navigator.vibrate)navigator.vibrate([8,40,8]);
+}
+
+/* ============ タブ・ログイン ============ */
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));t.classList.add('on');
+  const v=t.dataset.t;
+  $('#list').classList.toggle('hide',v!=='list');
+  $('#due').classList.toggle('hide',v!=='due');
+  $('#log').classList.toggle('hide',v!=='log');
+}));
+
+$('#lf').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const b=$('#lb');b.disabled=true;b.textContent='ログイン中…';$('#le').textContent='';
+  const id=$('#oid').value.trim().toUpperCase(),pw=$('#pw').value.trim();
+  const acc=ACCOUNTS.find(a=>a.id===id);
+  const ok=acc&&(await sha(id+':'+pw+':shiojiri2026'))===acc.h;
+  if(!ok){$('#le').textContent='事業者IDまたはパスワードが正しくありません';b.disabled=false;b.textContent='ログイン';return}
+  try{localStorage.setItem(TK,JSON.stringify({id:acc.id,name:acc.name}))}catch(e){}
+  start({id:acc.id,name:acc.name});
+});
+
+$('#lo').addEventListener('click',()=>{
+  if(!confirm('ログアウトしますか？\n次回はIDとパスワードの入力が必要になります。'))return;
+  try{localStorage.removeItem(TK);localStorage.removeItem(PD);localStorage.removeItem(LG)}catch(e){}
+  location.reload();
+});
+
+function start(s){
+  session=s;
+  products=PRODUCTS.filter(p=>p.operatorId===s.id);
+  $('#on').textContent=s.name;
+  $('#om').textContent='塩尻市 ／ 事業者ID '+s.id;
+  $('#login').classList.add('hide');$('#app').classList.remove('hide');
+  render();renderDue();renderLog();
+}
+
+(function(){
+  let s=null;
+  try{s=JSON.parse(localStorage.getItem(TK)||'null')}catch(e){}
+  if(s&&ACCOUNTS.some(a=>a.id===s.id))start(s);
+})();
+</script>

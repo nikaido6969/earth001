@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="theme-color" content="#2f7d4f" />
+<title>返礼品管理ポータル｜塩尻市</title>
+<style>
+:root{--brand:#2f7d4f;--brand-dark:#235e3b;--bg:#f4f6f4;--card:#fff;--line:#e2e5e2;--text:#1c2621;--muted:#6c7671;--danger:#c0392b;--r:14px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
+font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;-webkit-text-size-adjust:100%}
+.hide{display:none!important}
+header{position:sticky;top:0;z-index:20;background:var(--brand);color:#fff;padding:calc(env(safe-area-inset-top) + 12px) 16px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+header h1{font-size:16px;margin:0;font-weight:700;line-height:1.3}
+header .sub{font-size:11px;opacity:.85;margin-top:2px}
+.logout{background:rgba(255,255,255,.18);border:0;color:#fff;padding:7px 11px;border-radius:99px;font-size:11px;flex:none}
+.wrap{max-width:520px;margin:0 auto;padding:14px 14px 90px}
+/* login */
+.login{min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:22px}
+.lcard{width:100%;max-width:340px;background:var(--card);border-radius:18px;padding:26px 22px;box-shadow:0 10px 30px rgba(0,0,0,.09)}
+.lcard h1{font-size:19px;margin:0 0 3px;color:var(--brand-dark)}
+.lcard .s{font-size:12px;color:var(--muted);margin:0 0 18px}
+label{display:block;font-size:12px;color:var(--muted);margin:14px 0 5px}
+input{width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:11px;font-size:16px;background:#fff;font-family:inherit}
+.btn{width:100%;border:0;border-radius:11px;padding:14px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer}
+.btn-p{background:var(--brand);color:#fff;margin-top:18px}
+.btn-p:active{background:var(--brand-dark)}
+.btn-p:disabled{opacity:.5}
+.btn-s{background:#ecefec;color:var(--text)}
+.err{color:var(--danger);font-size:12px;margin-top:11px;min-height:15px;line-height:1.5}
+/* card */
+.card{background:var(--card);border-radius:var(--r);padding:15px;margin-bottom:13px;box-shadow:0 1px 6px rgba(0,0,0,.05)}
+.pn{font-size:15px;font-weight:700;line-height:1.4}
+.pc{font-size:11px;color:var(--muted);margin-top:3px}
+.badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:99px;margin-left:6px;vertical-align:middle}
+.b-a{background:#e4f3e9;color:var(--brand-dark)}
+.b-p{background:#fbe7e4;color:var(--danger)}
+.b-w{background:#fff3d6;color:#8a6100}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:11px 0;font-size:11px;color:var(--muted)}
+.grid b{display:block;color:var(--text);font-size:13px;font-weight:600;margin-top:1px}
+.pend{color:#8a6100;font-weight:600}
+.acts{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px}
+.chip{flex:1 1 calc(50% - 7px);min-width:132px;border:1px solid var(--line);background:#fafbfa;border-radius:10px;padding:11px 6px;font-size:12px;color:var(--text);font-family:inherit;cursor:pointer}
+.chip:active{background:#edf0ed}
+/* sheet */
+.back{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:60;display:flex;align-items:flex-end}
+.sheet{background:#fff;width:100%;max-height:90dvh;overflow-y:auto;border-radius:18px 18px 0 0;padding:18px 17px calc(env(safe-area-inset-bottom) + 22px);animation:up .22s ease-out}
+@keyframes up{from{transform:translateY(24px)}to{transform:translateY(0)}}
+.sheet h2{font-size:15px;margin:0 0 4px;line-height:1.4}
+.hint{color:var(--muted);font-size:11.5px;margin:0 0 14px;line-height:1.6}
+.sact{display:flex;gap:9px;margin-top:16px}
+.sact .btn{margin-top:0}
+/* wheel */
+.wg{display:flex;gap:5px}
+.wc{flex:1;min-width:0}
+.wl{text-align:center;font-size:10px;color:var(--muted);margin-top:4px}
+.wp{position:relative;overflow-y:scroll;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;background:#f7f8f7;border-radius:11px;scrollbar-width:none;height:200px;touch-action:pan-y}
+.wp::-webkit-scrollbar{display:none}
+.wi{scroll-snap-align:center;display:flex;align-items:center;justify-content:center;height:40px;font-size:16px;color:var(--muted);transition:color .12s}
+.wi.on{color:var(--brand-dark);font-weight:700;font-size:17px}
+.wh{position:absolute;left:0;right:0;top:50%;height:40px;transform:translateY(-50%);border-top:1px solid var(--line);border-bottom:1px solid var(--line);pointer-events:none;background:rgba(47,125,79,.045)}
+.secl{font-size:12px;font-weight:700;margin:14px 0 6px}
+/* toast + log */
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:#1c2621;color:#fff;padding:12px 18px;border-radius:99px;font-size:12.5px;z-index:100;opacity:0;transition:opacity .25s;max-width:90vw;text-align:center;pointer-events:none;line-height:1.5}
+.toast.on{opacity:1}
+.sent{background:#fffdf5;border:1px dashed #d9bd63;border-radius:11px;padding:11px 12px;font-size:11.5px;line-height:1.7;margin-bottom:9px;white-space:pre-wrap;word-break:break-word}
+.tabs{display:flex;gap:7px;margin-bottom:13px}
+.tab{flex:1;padding:9px;border:1px solid var(--line);background:#fff;border-radius:10px;font-size:12.5px;font-family:inherit;cursor:pointer;color:var(--muted)}
+.tab.on{background:var(--brand);color:#fff;border-color:var(--brand);font-weight:700}
+.empty{text-align:center;color:var(--muted);font-size:12.5px;padding:44px 0;line-height:1.8}
+.note{font-size:11px;color:var(--muted);line-height:1.7;background:#fff;border-radius:11px;padding:12px;margin-top:12px}
+</style>
+</head>
+<body>
+
+<div id="login" class="login">
+  <div class="lcard">
+    <h1>返礼品管理ポータル</h1>
+    <p class="s">塩尻市 事業者向け（試験導入）</p>
+    <form id="lf">
+      <label for="oid">事業者ID</label>
+      <input id="oid" autocomplete="username" autocapitalize="characters" inputmode="latin" required />
+      <label for="pw">パスワード</label>
+      <input id="pw" type="password" autocomplete="current-password" required />
+      <button class="btn btn-p" id="lb" type="submit">ログイン</button>
+      <div class="err" id="le"></div>
+    </form>
+    <p class="s" style="margin:16px 0 0;text-align:center">一度ログインすると次回から入力は不要です</p>
+  </div>
+</div>
+
+<div id="app" class="hide">
+  <header>
+    <div>
+      <h1 id="on">返礼品管理ポータル</h1>
+      <div class="sub" id="om"></div>
+    </div>
+    <button class="logout" id="lo">ログアウト</button>
+  </header>
+  <div class="wrap">
+    <div class="tabs">
+      <button class="tab on" data-t="list">返礼品一覧</button>
+      <button class="tab" data-t="log">送信済み <span id="lc"></span></button>
+    </div>
+    <div id="list"></div>
+    <div id="log" class="hide"></div>
+  </div>
+</div>
+
+<div id="back" class="back hide"><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const TK='sjr_token',LG='sjr_log',PD='sjr_pending';
+let token=localStorage.getItem(TK)||'';
+let products=[],pending={},sentLog=[];
+try{pending=JSON.parse(localStorage.getItem(PD)||'{}')}catch(e){pending={}}
+try{sentLog=JSON.parse(localStorage.getItem(LG)||'[]')}catch(e){sentLog=[]}
+
+function toast(m,ms){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('on'),ms||2800)}
+
+async function api(path,opt){
+  const o=Object.assign({headers:{}},opt||{});
+  if(token)o.headers['Authorization']='Bearer '+token;
+  if(o.body){o.headers['Content-Type']='application/json';o.body=JSON.stringify(o.body);o.method='POST'}
+  const r=await fetch('/api/'+path,o);
+  let d=null;try{d=await r.json()}catch(e){}
+  if(!r.ok)throw new Error((d&&d.error)||('通信エラー ('+r.status+')'));
+  return d;
+}
+
+/* ---------- ホイールピッカー ---------- */
+const IH=40,VIS=5,PAD=2;
+function wheel(el,vals,idx,onCh){
+  el.className='wp';el.innerHTML='';
+  const list=document.createElement('div');
+  const pad=()=>{const d=document.createElement('div');d.style.height=(IH*PAD)+'px';d.style.flex='none';return d};
+  list.appendChild(pad());
+  vals.forEach((v,i)=>{const d=document.createElement('div');d.className='wi';d.textContent=v.label;d.dataset.i=i;list.appendChild(d)});
+  list.appendChild(pad());
+  el.appendChild(list);
+  const hl=document.createElement('div');hl.className='wh';el.appendChild(hl);
+  let sel=Math.max(0,Math.min(idx,vals.length-1)),tm=null;
+  const items=list.querySelectorAll('.wi');
+  function paint(){items.forEach(d=>{const i=+d.dataset.i;d.classList.toggle('on',i===sel);d.style.opacity=Math.max(.28,1-Math.abs(i-sel)*.32)})}
+  function go(i,smooth){el.scrollTo({top:i*IH,behavior:smooth?'smooth':'auto'})}
+  el.addEventListener('scroll',()=>{
+    const i=Math.max(0,Math.min(Math.round(el.scrollTop/IH),vals.length-1));
+    if(i!==sel){sel=i;paint();if(navigator.vibrate)navigator.vibrate(4)}
+    clearTimeout(tm);tm=setTimeout(()=>{go(sel,false);if(onCh)onCh(vals[sel].value)},110);
+  },{passive:true});
+  requestAnimationFrame(()=>{go(sel,false);paint()});
+  return{get:()=>vals[sel].value,set:(i)=>{sel=Math.max(0,Math.min(i,vals.length-1));go(sel,false);paint()},
+    reset:(nv,ni)=>{vals=nv;list.querySelectorAll('.wi').forEach(n=>n.remove());
+      const f=document.createDocumentFragment();nv.forEach((v,i)=>{const d=document.createElement('div');d.className='wi';d.textContent=v.label;d.dataset.i=i;f.appendChild(d)});
+      list.insertBefore(f,list.lastChild);sel=Math.max(0,Math.min(ni,nv.length-1));
+      const it=list.querySelectorAll('.wi');items.length=0;
+      go(sel,false);it.forEach(d=>{const i=+d.dataset.i;d.classList.toggle('on',i===sel);d.style.opacity=Math.max(.28,1-Math.abs(i-sel)*.32)});}}
+}
+const rng=(a,b)=>{const o=[];for(let i=a;i<=b;i++)o.push(i);return o};
+const dim=(y,m)=>new Date(y,m,0).getDate();
+const pad2=n=>String(n).padStart(2,'0');
+
+function dateWheel(host,iso){
+  const t=new Date(),y0=t.getFullYear(),y1=y0+2;
+  let d=iso?new Date(iso):t; if(isNaN(d))d=t;
+  const st={y:Math.min(Math.max(d.getFullYear(),y0),y1),m:d.getMonth()+1,d:d.getDate()};
+  host.className='wg';host.innerHTML='<div class="wc"><div></div><div class="wl">年</div></div><div class="wc"><div></div><div class="wl">月</div></div><div class="wc"><div></div><div class="wl">日</div></div>';
+  const cols=host.querySelectorAll('.wc>div:first-child');
+  let dw;
+  const refresh=()=>{const mx=dim(st.y,st.m);if(st.d>mx)st.d=mx;dw.reset(rng(1,mx).map(v=>({value:v,label:v+'日'})),st.d-1)};
+  wheel(cols[0],rng(y0,y1).map(v=>({value:v,label:v+'年'})),st.y-y0,v=>{st.y=v;refresh()});
+  wheel(cols[1],rng(1,12).map(v=>({value:v,label:v+'月'})),st.m-1,v=>{st.m=v;refresh()});
+  dw=wheel(cols[2],rng(1,dim(st.y,st.m)).map(v=>({value:v,label:v+'日'})),st.d-1,v=>{st.d=v});
+  return{get:()=>st.y+'-'+pad2(st.m)+'-'+pad2(st.d)};
+}
+
+/* ---------- 画面 ---------- */
+function eff(p,f){return pending[p.id]&&pending[p.id][f]!=null?pending[p.id][f]:p[f]}
+function fd(v){return v?v:'未設定'}
+
+function render(){
+  const el=$('#list');
+  if(!products.length){el.innerHTML='<div class="empty">取り扱い返礼品がありません。<br>自治体担当者にお問い合わせください。</div>';return}
+  el.innerHTML=products.map(p=>{
+    const st=eff(p,'stockStatus'),pp=pending[p.id]||{};
+    return '<div class="card">'+
+    '<div class="pn">'+esc(p.productName)+'<span class="badge '+(st==='paused'?'b-p':'b-a')+'">'+(st==='paused'?'受付停止中':'受付中')+'</span></div>'+
+    '<div class="pc">商品コード: '+esc(p.productCode)+'</div>'+
+    '<div class="grid">'+
+      '<div>在庫数<b>'+eff(p,'stock')+'</b></div>'+
+      '<div>商品代<b>'+Number(eff(p,'price')).toLocaleString()+'円'+(pp.price?' <span class="badge b-w">申請中</span>':'')+'</b></div>'+
+      '<div>発送期間<b'+(pp.shippingFrom?' class="pend"':'')+'>'+fd(eff(p,'shippingFrom'))+'<br>〜 '+fd(eff(p,'shippingTo'))+'</b></div>'+
+      '<div>受付期間<b'+(pp.acceptFrom?' class="pend"':'')+'>'+fd(eff(p,'acceptFrom'))+'<br>〜 '+fd(eff(p,'acceptTo'))+'</b></div>'+
+    '</div>'+
+    (pp.desiredDate?'<div class="pc pend">変更希望日を申請中: '+pp.desiredDate+'</div>':'')+
+    '<div class="acts">'+
+      '<button class="chip" data-a="stock" data-id="'+p.id+'">在庫を増減する</button>'+
+      '<button class="chip" data-a="toggle" data-id="'+p.id+'">'+(st==='paused'?'受付を再開する':'受付を停止する')+'</button>'+
+      '<button class="chip" data-a="price" data-id="'+p.id+'">商品代を変更する</button>'+
+      '<button class="chip" data-a="desiredDate" data-id="'+p.id+'">変更希望日を伝える</button>'+
+      '<button class="chip" data-a="shippingPeriod" data-id="'+p.id+'">発送期間を変更する</button>'+
+      '<button class="chip" data-a="acceptPeriod" data-id="'+p.id+'">受付期間を変更する</button>'+
+    '</div></div>';
+  }).join('');
+}
+
+function renderLog(){
+  $('#lc').textContent=sentLog.length?'('+sentLog.length+')':'';
+  const el=$('#log');
+  if(!sentLog.length){el.innerHTML='<div class="empty">まだ送信した変更はありません。<br>返礼品一覧から変更を送信してみてください。</div>';return}
+  el.innerHTML=sentLog.map(c=>
+    '<div class="card"><div class="pn" style="font-size:14px">'+esc(c.typeLabel)+' — '+esc(c.productName)+'</div>'+
+    '<div class="pc">'+esc(c.productCode)+' ／ '+esc(c.requestedAt)+'</div>'+
+    '<div style="font-size:13px;margin:9px 0 4px"><b>'+esc(c.summary)+'</b></div>'+
+    '<div class="secl">Larkへ送信する内容</div><div class="sent">'+esc(c.larkMessage)+'</div>'+
+    '<div class="secl">塩尻市マスタへの反映</div><div class="sent">反映先: '+esc(c.masterUpdate.column)+'\n（該当セルを黄色で塗りつぶし）\n\nC列 備考へ追記:\n'+esc(c.masterUpdate.remark)+'</div>'+
+    '</div>').join('')+
+    '<div class="note">※ 試験運用のため、Lark送信と塩尻市マスタへの書き込みは実行せず、送信内容の確認のみ行っています。Larkの接続許可とGoogleサービスアカウントを設定すると、実際に送信・反映されます。</div>';
+}
+
+/* ---------- 操作シート ---------- */
+function open(html){$('#sheet').innerHTML=html;$('#back').classList.remove('hide')}
+function close(){$('#back').classList.add('hide');$('#sheet').innerHTML=''}
+$('#back').addEventListener('click',e=>{if(e.target===$('#back'))close()});
+
+document.addEventListener('click',e=>{
+  const b=e.target.closest('.chip');if(!b)return;
+  const p=products.find(x=>x.id===+b.dataset.id),a=b.dataset.a;
+  if(a==='toggle')return toggle(p);
+  if(a==='stock')return shStock(p);
+  if(a==='price')return shPrice(p);
+  if(a==='desiredDate')return shDate(p);
+  if(a==='shippingPeriod')return shPeriod(p,'shippingPeriod','発送期間の変更','shippingFrom','shippingTo');
+  if(a==='acceptPeriod')return shPeriod(p,'acceptPeriod','受付期間の変更','acceptFrom','acceptTo');
+});
+
+const FOOT='<div class="sact"><button class="btn btn-s" id="cx">キャンセル</button><button class="btn btn-p" id="ok" style="margin-top:0">この内容で送信</button></div>';
+
+function toggle(p){
+  const paused=eff(p,'stockStatus')==='paused';
+  if(!confirm(paused?'受付を再開します。よろしいですか？':'受付を停止します。よろしいですか？'))return;
+  send(p,'stock',{action:paused?'resume':'pause'});
+}
+
+function shStock(p){
+  open('<h2>在庫を増減する</h2><p class="hint">'+esc(p.productName)+'<br>現在の在庫数: <b>'+eff(p,'stock')+'</b><br>スクロールして増減数を選び、決定してください。</p><div id="w"></div>'+FOOT);
+  const vals=rng(-100,100).map(v=>({value:v,label:(v>0?'+':'')+v+'個'}));
+  const w=wheel($('#w'),vals,100);
+  $('#cx').onclick=close;
+  $('#ok').onclick=()=>{const d=w.get();if(!d)return toast('増減数を選んでください');send(p,'stock',{action:'adjust',delta:d})};
+}
+
+function shPrice(p){
+  const cur=Number(eff(p,'price'));
+  open('<h2>商品代を変更する</h2><p class="hint">'+esc(p.productName)+'<br>現在の商品代: <b>'+cur.toLocaleString()+'円</b><br>スクロールして金額を選び、決定してください。</p>'+
+   '<div class="wg"><div class="wc"><div id="w1"></div><div class="wl">万円</div></div><div class="wc"><div id="w2"></div><div class="wl">千円</div></div><div class="wc"><div id="w3"></div><div class="wl">百円</div></div></div>'+
+   '<div id="pv" style="text-align:center;font-size:15px;font-weight:700;margin-top:12px;color:#235e3b"></div>'+FOOT);
+  const man=Math.floor(cur/10000),sen=Math.floor(cur%10000/1000),hya=Math.floor(cur%1000/100);
+  const upd=()=>{$('#pv').textContent='変更後: '+(w1.get()*10000+w2.get()*1000+w3.get()*100).toLocaleString()+'円'};
+  const w1=wheel($('#w1'),rng(0,30).map(v=>({value:v,label:''+v})),man,upd);
+  const w2=wheel($('#w2'),rng(0,9).map(v=>({value:v,label:''+v})),sen,upd);
+  const w3=wheel($('#w3'),rng(0,9).map(v=>({value:v,label:''+v})),hya,upd);
+  upd();
+  $('#cx').onclick=close;
+  $('#ok').onclick=()=>{const v=w1.get()*10000+w2.get()*1000+w3.get()*100;if(v<=0)return toast('金額を選んでください');send(p,'price',{newPrice:v})};
+}
+
+function shDate(p){
+  open('<h2>変更希望日を伝える</h2><p class="hint">'+esc(p.productName)+'<br>スクロールして年・月・日を選び、決定してください。<br>※ご希望に沿えるまでお時間がかかる場合がございます。</p><div id="w"></div>'+FOOT);
+  const w=dateWheel($('#w'),(pending[p.id]||{}).desiredDate);
+  $('#cx').onclick=close;
+  $('#ok').onclick=()=>send(p,'desiredDate',{desiredDate:w.get()});
+}
+
+function shPeriod(p,type,title,ff,tf){
+  open('<h2>'+title+'</h2><p class="hint">'+esc(p.productName)+'<br>スクロールして開始日・終了日を選び、決定してください。</p>'+
+   '<div class="secl">開始日</div><div id="wa"></div><div class="secl">終了日</div><div id="wb"></div>'+FOOT);
+  const a=dateWheel($('#wa'),eff(p,ff)),b=dateWheel($('#wb'),eff(p,tf));
+  $('#cx').onclick=close;
+  $('#ok').onclick=()=>{const f=a.get(),t=b.get();if(f>t)return toast('開始日は終了日より前にしてください');send(p,type,{from:f,to:t})};
+}
+
+/* ---------- 送信 ---------- */
+async function send(p,type,payload){
+  const btn=$('#ok');if(btn){btn.disabled=true;btn.textContent='送信中...'}
+  try{
+    const r=await api('change',{body:{productId:p.id,type,payload}});
+    const c=r.change;
+    const pp=pending[p.id]||(pending[p.id]={});
+    if(type==='stock'){
+      if(payload.action==='adjust')pp.stock=Math.max(0,Number(eff(p,'stock'))+payload.delta);
+      else pp.stockStatus=payload.action==='pause'?'paused':'active';
+    }
+    else if(type==='price')pp.price=payload.newPrice;
+    else if(type==='desiredDate')pp.desiredDate=payload.desiredDate;
+    else if(type==='shippingPeriod'){pp.shippingFrom=payload.from;pp.shippingTo=payload.to}
+    else if(type==='acceptPeriod'){pp.acceptFrom=payload.from;pp.acceptTo=payload.to}
+    localStorage.setItem(PD,JSON.stringify(pending));
+    sentLog.unshift(c);localStorage.setItem(LG,JSON.stringify(sentLog.slice(0,60)));
+    close();render();renderLog();
+    toast('送信しました：'+c.summary,3400);
+    if(navigator.vibrate)navigator.vibrate([8,40,8]);
+  }catch(e){
+    toast(e.message);
+    if(btn){btn.disabled=false;btn.textContent='この内容で送信'}
+  }
+}
+
+/* ---------- タブ / ログイン ---------- */
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));t.classList.add('on');
+  const log=t.dataset.t==='log';
+  $('#log').classList.toggle('hide',!log);$('#list').classList.toggle('hide',log);
+}));
+
+$('#lf').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const b=$('#lb');b.disabled=true;b.textContent='ログイン中...';$('#le').textContent='';
+  try{
+    const r=await api('login',{body:{operatorId:$('#oid').value.trim(),password:$('#pw').value.trim()}});
+    token=r.token;localStorage.setItem(TK,token);
+    await boot();
+  }catch(err){$('#le').textContent=err.message;b.disabled=false;b.textContent='ログイン'}
+});
+
+$('#lo').addEventListener('click',()=>{
+  if(!confirm('ログアウトしますか？次回はパスワードの入力が必要になります。'))return;
+  localStorage.removeItem(TK);localStorage.removeItem(PD);localStorage.removeItem(LG);location.reload();
+});
+
+async function boot(){
+  if(!token)return;
+  try{
+    const r=await api('products');
+    products=r.products;
+    $('#on').textContent=r.operator.name;
+    $('#om').textContent=r.operator.municipality+' ／ 事業者ID: '+r.operator.operatorId;
+    $('#login').classList.add('hide');$('#app').classList.remove('hide');
+    render();renderLog();
+  }catch(e){
+    localStorage.removeItem(TK);token='';
+    $('#login').classList.remove('hide');$('#app').classList.add('hide');
+  }
+}
+boot();
+</script>
+</body>
+</html>
