@@ -38,13 +38,35 @@ body{
   font-feature-settings:"palt" 1; -webkit-text-size-adjust:100%;
   font-variant-numeric:tabular-nums;
 }
-button,input{font-family:inherit}
+button,input,select{font-family:inherit}
 button{cursor:pointer}
 :focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-radius:6px}
 .hide{display:none!important}
 
+/* ==== iOS シミュレーション表示 ==== */
+.stage{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:26px 16px;
+  background:radial-gradient(120% 90% at 50% 0%,color-mix(in srgb,var(--brand) 9%,var(--paper)) 0%,var(--paper) 62%)}
+.device{position:relative;width:393px;height:852px;max-height:calc(100dvh - 92px);
+  background:var(--paper);border-radius:54px;padding:12px;
+  box-shadow:0 0 0 12px #1B1F1C,0 0 0 13px #35403A,0 30px 70px rgba(0,0,0,.34);flex:none}
+.screen{position:relative;width:100%;height:100%;border-radius:43px;overflow:hidden;background:var(--paper);transform:translateZ(0)}
+.island{position:absolute;top:9px;left:50%;transform:translateX(-50%);width:112px;height:31px;background:#000;border-radius:99px;z-index:40;pointer-events:none}
+.sbar{position:absolute;top:0;left:0;right:0;height:50px;z-index:35;display:flex;align-items:center;justify-content:space-between;
+  padding:14px 30px 0;font-size:14px;font-weight:700;color:#fff;pointer-events:none;letter-spacing:.02em}
+.sbar .icons{display:flex;align-items:center;gap:5px}
+.homebar{position:absolute;bottom:7px;left:50%;transform:translateX(-50%);width:138px;height:5px;border-radius:99px;background:var(--ink);opacity:.32;z-index:40;pointer-events:none}
+.scroller{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.caption{font-size:11px;color:var(--muted);letter-spacing:.13em;text-transform:uppercase;font-weight:700}
+@media (max-width:820px){
+  .stage{padding:0;display:block;background:var(--paper)}
+  .device{width:100%;height:100dvh;max-height:none;border-radius:0;padding:0;box-shadow:none}
+  .screen{border-radius:0}
+  .island,.sbar,.homebar{display:none}
+  .caption{display:none}
+}
+
 /* ---- login ---- */
-.login{min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:24px}
+.login{min-height:100%;display:flex;align-items:center;justify-content:center;padding:24px}
 .lcard{width:100%;max-width:352px;background:var(--surface);border-radius:20px;padding:30px 24px;box-shadow:var(--shadow)}
 .mark{width:34px;height:34px;border-radius:9px;background:var(--brand);display:flex;align-items:center;justify-content:center;margin-bottom:16px}
 .mark span{color:#fff;font-weight:900;font-size:17px;line-height:1}
@@ -63,6 +85,7 @@ input:focus{border-color:var(--brand);outline:none;background:var(--surface)}
 
 /* ---- app ---- */
 header{position:sticky;top:0;z-index:20;background:var(--brand);color:#fff;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+@media (min-width:821px){header{padding-top:56px}.login{padding-top:60px}}
 header h1{font-size:15.5px;margin:0;font-weight:700;line-height:1.35}
 header .sub{font-size:10.5px;opacity:.86;margin-top:3px;letter-spacing:.02em}
 .logout{background:rgba(255,255,255,.16);border:0;color:#fff;padding:7px 12px;border-radius:99px;font-size:11px;flex:none;font-weight:500}
@@ -87,7 +110,7 @@ header .sub{font-size:10.5px;opacity:.86;margin-top:3px;letter-spacing:.02em}
 .chip:active{background:var(--brand-soft);border-color:var(--brand)}
 
 /* ---- sheet ---- */
-.back{position:fixed;inset:0;background:rgba(10,16,12,.5);z-index:60;display:flex;align-items:flex-end}
+.back{position:absolute;inset:0;background:rgba(10,16,12,.5);z-index:60;display:flex;align-items:flex-end}
 .sheet{background:var(--surface);width:100%;max-height:90dvh;overflow-y:auto;border-radius:20px 20px 0 0;padding:8px 17px 26px;animation:up .24s cubic-bezier(.2,.8,.3,1)}
 @keyframes up{from{transform:translateY(26px);opacity:.6}to{transform:translateY(0);opacity:1}}
 @media (prefers-reduced-motion:reduce){.sheet{animation:none}}
@@ -112,14 +135,40 @@ header .sub{font-size:10.5px;opacity:.86;margin-top:3px;letter-spacing:.02em}
 
 /* ---- log ---- */
 .pre{background:var(--surface-2);border:1px solid var(--line);border-left:3px solid var(--brand);border-radius:10px;padding:11px 12px;font-size:11.5px;line-height:1.85;white-space:pre-wrap;word-break:break-word;color:var(--ink)}
-.pre.master{border-left-color:var(--amber-line);background:var(--amber-soft)}
-.yellow{background:#FCE96A;color:#3A2E00;padding:1px 5px;border-radius:3px;font-weight:700}
 .empty{text-align:center;color:var(--muted);font-size:12.5px;padding:52px 16px;line-height:1.9}
 .note{font-size:11px;color:var(--muted);line-height:1.85;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:13px;margin-top:12px}
 .due-head{background:var(--amber-soft);border:1px solid var(--amber-line);border-radius:12px;padding:13px;font-size:11.5px;line-height:1.85;color:var(--amber);margin-bottom:13px}
-.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:12px 18px;border-radius:99px;font-size:12.5px;z-index:100;opacity:0;transition:opacity .25s;max-width:90vw;text-align:center;pointer-events:none;line-height:1.6;box-shadow:var(--shadow)}
+.toast{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:12px 18px;border-radius:99px;font-size:12.5px;z-index:100;opacity:0;transition:opacity .25s;max-width:86%;text-align:center;pointer-events:none;line-height:1.6;box-shadow:var(--shadow)}
 .toast.on{opacity:1}
+
+/* ---- 翌年度の受付 可否 ---- */
+.renew{margin-top:13px;padding-top:13px;border-top:1px solid var(--line)}
+.renew-l{font-size:10.5px;font-weight:700;letter-spacing:.09em;color:var(--muted);margin-bottom:7px}
+.renew select{width:100%;padding:12px 34px 12px 13px;border:1px solid var(--line);border-radius:10px;font-size:14px;
+  background:var(--surface-2);color:var(--ink);appearance:none;
+  background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);
+  background-position:calc(100% - 18px) 50%,calc(100% - 13px) 50%;background-size:5px 5px,5px 5px;background-repeat:no-repeat}
+.renew select:focus{border-color:var(--brand);outline:none}
+.renew.done select{border-color:var(--brand);background-color:var(--brand-soft);color:var(--brand-deep);font-weight:700}
+.renew.decline select{border-color:var(--danger);background-color:var(--danger-soft);color:var(--danger);font-weight:700}
+.renew-s{font-size:11px;margin-top:7px;line-height:1.7}
+.renew-s.ok{color:var(--brand-deep)}
+.renew-s.no{color:var(--danger)}
 </style>
+
+<div class="stage">
+<div class="device">
+  <div class="screen">
+    <div class="island"></div>
+    <div class="sbar">
+      <span id="clock">9:41</span>
+      <span class="icons">
+        <svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor" aria-hidden="true"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="6" width="3" height="6" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor" aria-hidden="true"><path d="M8 11.2 5.9 8.9a3 3 0 0 1 4.2 0L8 11.2ZM3.6 6.6a6.4 6.4 0 0 1 8.8 0l-1.4 1.5a4.4 4.4 0 0 0-6 0L3.6 6.6ZM1.2 4.1a9.8 9.8 0 0 1 13.6 0l-1.4 1.5a7.8 7.8 0 0 0-10.8 0L1.2 4.1Z"/></svg>
+        <svg width="26" height="12" viewBox="0 0 26 12" fill="none" aria-hidden="true"><rect x=".7" y=".7" width="21" height="10.6" rx="3" stroke="currentColor" stroke-opacity=".5"/><rect x="2.4" y="2.4" width="17" height="7.2" rx="1.6" fill="currentColor"/><path d="M23.4 4.2v3.6c1-.3 1.6-.9 1.6-1.8s-.6-1.5-1.6-1.8Z" fill="currentColor" fill-opacity=".5"/></svg>
+      </span>
+    </div>
+    <div class="scroller">
 
 <div id="login" class="login">
   <div class="lcard">
@@ -159,13 +208,19 @@ header .sub{font-size:10.5px;opacity:.86;margin-top:3px;letter-spacing:.02em}
   </div>
 </div>
 
-<div id="back" class="back hide"><div class="sheet" id="sheet"></div></div>
-<div class="toast" id="toast" role="status"></div>
+    </div><!-- /scroller -->
+    <div id="back" class="back hide"><div class="sheet" id="sheet"></div></div>
+    <div class="toast" id="toast" role="status"></div>
+    <div class="homebar"></div>
+  </div><!-- /screen -->
+</div><!-- /device -->
+<div class="caption">iOS シミュレーション表示</div>
+</div><!-- /stage -->
 
 <script>
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const TK='sjr_session',PD='sjr_pending',LG='sjr_log';
+const TK='sjr_session',PD='sjr_pending',LG='sjr_log',RN='sjr_renew';
 
 /* ============ 事業者アカウント（試験用） ============ */
 const ACCOUNTS=[
@@ -179,21 +234,21 @@ const ACCOUNTS=[
 
 /* ============ 返礼品（塩尻市マスタ 返礼品マスタ より抽出） ============ */
 const V=[
- ['G01','デラウェア 5〜7房',4500,30,'2026-08-01','2026-08-31','2026-06-01','2026-08-25'],
- ['G03','クイーンルージュ（2房）',5500,40,'2026-09-10','2026-10-10','2026-06-01','2026-08-22'],
- ['G04-2411','シャインマスカット 2房',5000,50,'2026-09-01','2026-10-20','2026-06-01','2026-08-27'],
- ['G06-2411','種なし巨峰 2房',4500,35,'2026-09-01','2026-09-30','2026-06-01','2026-08-29'],
- ['G07R611','南水 5kg',4500,40,'2026-09-20','2026-10-20','2026-06-01','2026-08-24'],
- ['G09','サンふじ・シナノゴールド',5000,60,'2026-11-20','2026-12-25','2026-08-01','2026-11-30'],
- ['G10R6','シナノスイート',4500,55,'2026-10-05','2026-11-05','2026-08-01','2026-10-25'],
- ['G11R6','ぐんま名月',4800,25,'2026-10-25','2026-11-25','2026-08-01','2026-11-15'],
- ['G12R6','シナノゴールド',4500,45,'2026-11-01','2026-12-01','2026-08-01','2026-11-20'],
- ['G13R611','サンふじ',4500,80,'2026-11-20','2026-12-25','2026-08-01','2026-08-28'],
- ['G17','ピオーネ',5000,20,'2026-09-05','2026-10-05','2026-06-01','2026-09-25'],
- ['G19','豊水',4000,30,'2026-08-25','2026-09-20','2026-06-01','2026-09-10'],
- ['G20','幸水',4000,30,'2026-08-10','2026-09-05','2026-06-01','2026-08-30'],
- ['G21','ナガノパープル',6000,20,'2026-09-05','2026-10-05','2026-06-01','2026-08-30'],
- ['G22','旬のおまかせりんご（シナノゴールド・シナノスイート・ぐんま名月）',5000,40,'2026-10-10','2026-11-30','2026-08-01','2026-11-20']
+ ['G01','デラウェア 5〜7房 約1.5kg',4500,30,'2026-08-01','2026-08-31','2026-06-01','2026-08-25'],
+ ['G03','クイーンルージュ 2房 約1kg',5500,40,'2026-09-10','2026-10-10','2026-06-01','2026-08-22'],
+ ['G04-2411','シャインマスカット 2房 約1kg',5000,50,'2026-09-01','2026-10-20','2026-06-01','2026-08-27'],
+ ['G06-2411','種なし巨峰 2房 約1kg',4500,35,'2026-09-01','2026-09-30','2026-06-01','2026-08-29'],
+ ['G07R611','南水（梨）約5kg',4500,40,'2026-09-20','2026-10-20','2026-06-01','2026-08-24'],
+ ['G09','サンふじ・シナノゴールド 約5kg',5000,60,'2026-11-20','2026-12-25','2026-08-01','2026-11-30'],
+ ['G10R6','シナノスイート 約5kg',4500,55,'2026-10-05','2026-11-05','2026-08-01','2026-10-25'],
+ ['G11R6','ぐんま名月 約5kg',4800,25,'2026-10-25','2026-11-25','2026-08-01','2026-11-15'],
+ ['G12R6','シナノゴールド 約5kg',4500,45,'2026-11-01','2026-12-01','2026-08-01','2026-11-20'],
+ ['G13R611','サンふじ 約5kg',4500,80,'2026-11-20','2026-12-25','2026-08-01','2026-08-28'],
+ ['G17','ピオーネ 2房 約1kg',5000,20,'2026-09-05','2026-10-05','2026-06-01','2026-09-25'],
+ ['G19','豊水（梨）約5kg',4000,30,'2026-08-25','2026-09-20','2026-06-01','2026-09-10'],
+ ['G20','幸水（梨）約5kg',4000,30,'2026-08-10','2026-09-05','2026-06-01','2026-08-30'],
+ ['G21','ナガノパープル 2房 約1kg',6000,20,'2026-09-05','2026-10-05','2026-06-01','2026-08-30'],
+ ['G22','旬のおまかせりんご（シナノゴールド・シナノスイート・ぐんま名月）約5kg',5000,40,'2026-10-10','2026-11-30','2026-08-01','2026-11-20']
 ];
 const mk=(o,r)=>({operatorId:o,productCode:r[0],productName:r[1],price:r[2],stock:r[3],stockStatus:'active',shippingFrom:r[4],shippingTo:r[5],acceptFrom:r[6],acceptTo:r[7]});
 const PRODUCTS=[
@@ -212,11 +267,14 @@ const PRODUCTS=[
 ].map((x,i)=>({id:i+1,...x}));
 
 const LABELS={stock:'在庫調整',price:'商品代変更',desiredDate:'変更希望日',shippingPeriod:'発送期間変更',acceptPeriod:'受付期間変更'};
-const COLS={stock:'T列 在庫数',price:'Y列 精算額',shippingPeriod:'AE列 発送開始日 ／ AF列 発送終了日',acceptPeriod:'対応列なし（C列 備考のみ）',desiredDate:'対応列なし（C列 備考のみ）'};
 
-let session=null,products=[],pending={},sentLog=[];
+/* 翌年度の受付可否 の選択肢 */
+const RENEW=['未回答','翌年度も受付する（承諾）','内容を変更して受付する','翌年度は受付しない','検討中（後日連絡します）'];
+
+let session=null,products=[],pending={},sentLog=[],renew={};
 try{pending=JSON.parse(localStorage.getItem(PD)||'{}')}catch(e){}
 try{sentLog=JSON.parse(localStorage.getItem(LG)||'[]')}catch(e){}
+try{renew=JSON.parse(localStorage.getItem(RN)||'{}')}catch(e){}
 
 function toast(m,ms){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('on'),ms||3000)}
 async function sha(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
@@ -311,18 +369,48 @@ function renderDue(){
   }).map(p=>({p,d:daysTo(eff(p,'acceptTo'))})).sort((a,b)=>a.d-b.d);
 
   $('#due').innerHTML=
-   '<div class="due-head"><b>受付終了間近のお知らせ</b><br>'+
-   '先行予約・期間限定の返礼品（発送期間の記載があるもの）について、受付終了日の1週間前から当日まで毎日ご案内します。'+
-   '翌年の受付開始の準備と、再掲載受付のご承諾のため、内容をご確認ください。<br>'+
+   '<div class="due-head"><b>まもなく受付終了</b><br>'+
+   '翌年度の受付について、下記の返礼品のご意向をお聞かせください。'+
+   'いただいたご回答をもとに、翌年度の受付開始と再掲載の準備を進めます。<br>'+
    '<span style="opacity:.8">基準日 '+today()+'</span></div>'+
-   (items.length?items.map(({p,d})=>
-     '<div class="card"><div class="pn">'+esc(p.productName)+
+   (items.length?items.map(({p,d})=>{
+     const a=renew[p.id],ok=a===RENEW[1]||a===RENEW[2],no=a===RENEW[3];
+     return '<div class="card"><div class="pn">'+esc(p.productName)+
      '<span class="pill p-due">'+(d===0?'本日が受付終了日':'残り '+d+'日')+'</span></div>'+
      '<div class="pc">商品コード '+esc(p.productCode)+'</div>'+
      '<div class="grid"><div>受付終了日<b>'+eff(p,'acceptTo')+'</b></div>'+
-     '<div>発送期間<b>'+fd(eff(p,'shippingFrom'))+'<br>〜 '+fd(eff(p,'shippingTo'))+'</b></div></div></div>'
-   ).join(''):'<div class="empty">受付終了が1週間以内に迫っている<br>先行予約・期間限定の返礼品はありません。</div>');
+     '<div>発送期間<b>'+fd(eff(p,'shippingFrom'))+'<br>〜 '+fd(eff(p,'shippingTo'))+'</b></div></div>'+
+     '<div class="renew'+(ok?' done':'')+(no?' decline':'')+'">'+
+       '<div class="renew-l">翌年度の受付について</div>'+
+       '<select data-renew="'+p.id+'" aria-label="翌年度の受付可否">'+
+         RENEW.map(o=>'<option'+(a===o?' selected':'')+'>'+o+'</option>').join('')+
+       '</select>'+
+       (a&&a!==RENEW[0]?'<div class="renew-s '+(no?'no':'ok')+'">'+(no?'翌年度は受付しないものとして承りました。':'ご承諾ありがとうございます。翌年度の受付開始の準備を進めます。')+'</div>':'')+
+     '</div></div>';
+   }).join(''):'<div class="empty">受付終了が1週間以内に迫っている<br>先行予約・期間限定の返礼品はありません。</div>');
 }
+
+document.addEventListener('change',e=>{
+  const s=e.target.closest('select[data-renew]');if(!s)return;
+  const p=products.find(x=>x.id===+s.dataset.renew),v=s.value;
+  renew[p.id]=v;
+  try{localStorage.setItem(RN,JSON.stringify(renew))}catch(err){}
+  if(v===RENEW[0]){renderDue();return}
+
+  const at=new Date().toLocaleString('ja-JP',{timeZone:'Asia/Tokyo'});
+  sentLog.unshift({typeLabel:'翌年度の受付可否',productName:p.productName,productCode:p.productCode,requestedAt:at,
+    lark:'【翌年度の受付可否】'+
+      '\n自治体： 塩尻市'+
+      '\n事業者： '+session.name+'（'+session.id+'）'+
+      '\n返礼品： '+p.productName+'（'+p.productCode+'）'+
+      '\n今年度の受付終了日： '+eff(p,'acceptTo')+
+      '\nご回答： '+v+
+      '\n回答日時： '+at});
+  try{localStorage.setItem(LG,JSON.stringify(sentLog.slice(0,60)))}catch(err){}
+  renderDue();renderLog();
+  toast('回答を送信しました　'+v,3400);
+  if(navigator.vibrate)navigator.vibrate([8,40,8]);
+});
 
 function renderLog(){
   $('#lc').textContent=sentLog.length?' '+sentLog.length:'';
@@ -332,11 +420,11 @@ function renderLog(){
     '<div class="card"><div class="pn" style="font-size:14px">'+esc(c.typeLabel)+'</div>'+
     '<div class="pc">'+esc(c.productName)+' ／ '+esc(c.productCode)+'</div>'+
     '<div class="pc" style="margin-top:6px">'+esc(c.requestedAt)+'</div>'+
-    '<div class="secl">Larkへ送信する内容</div><div class="pre">'+esc(c.lark)+'</div>'+
-    '<div class="secl">塩尻市マスタへの反映</div><div class="pre master">反映先： '+esc(c.column)+
-      '\n該当セルは<span class="yellow">黄色で塗りつぶし</span>\n\nC列 備考へ追記：\n'+esc(c.remark)+'</div></div>'
+    (c.before?'<div class="grid" style="margin-top:11px"><div>変更前<b>'+esc(c.before)+'</b></div>'+
+      '<div>変更後<b class="req">'+esc(c.after)+'</b></div></div>':'')+
+    '<div class="secl">送信内容</div><div class="pre">'+esc(c.lark)+'</div></div>'
   ).join('')+
-  '<div class="note">この試験版は、送信内容の確認までを行います。Larkの通信許可とGoogleサービスアカウントを設定すると、実際にLarkへ送信され、塩尻市マスタのセルが更新されます。</div>';
+  '<div class="note">送信いただいた内容は、自治体・運営の担当者が確認のうえ反映します。反映までお時間をいただく場合がございます。</div>';
 }
 
 /* ============ 操作 ============ */
@@ -362,9 +450,9 @@ document.addEventListener('click',e=>{
 
 function shStock(p){
   const cur=Number(eff(p,'stock'));
-  open('<h2>在庫を増減する</h2><p class="hint">'+esc(p.productName)+'<br>現在の在庫数 <b>'+cur+'</b><br>スクロールして増減数を選び、送信してください。</p><div id="w"></div><div class="preview" id="pv"></div>'+FOOT);
-  const upd=v=>$('#pv').textContent='変更後の在庫数 '+Math.max(0,cur+v);
-  const w=wheel($('#w'),rng(-100,100).map(v=>({value:v,label:(v>0?'+':'')+v+'個'})),100,upd);
+  open('<h2>在庫を増減する</h2><p class="hint">'+esc(p.productName)+'<br>現在の登録在庫数 <b>'+cur+'</b><br>スクロールして増減数を選び、送信してください。</p><div id="w"></div><div class="preview" id="pv"></div>'+FOOT);
+  const upd=v=>$('#pv').textContent='変更後の登録在庫数 '+Math.max(0,cur+v);
+  const w=wheel($('#w'),rng(-100,100).map(v=>({value:v,label:(v>0?'+':'')+v})),100,upd);
   upd(0);
   $('#cx').onclick=close;
   $('#ok').onclick=()=>{const d=w.get();if(!d)return toast('増減数を選んでください');submit(p,'stock',{action:'adjust',delta:d})};
@@ -420,9 +508,14 @@ function submit(p,type,pl){
   }
 
   const at=new Date().toLocaleString('ja-JP',{timeZone:'Asia/Tokyo'});
-  const rec={typeLabel:LABELS[type],productName:p.productName,productCode:p.productCode,requestedAt:at,column:COLS[type],
-    lark:'【返礼品変更申請】'+LABELS[type]+'\n自治体： 塩尻市\n事業者： '+session.name+'（'+session.id+'）\n返礼品： '+p.productName+'（'+p.productCode+'）\n変更内容： '+summary+'\n申請日時： '+at,
-    remark:'['+at+'] '+session.name+' がポータルから変更 ／ '+LABELS[type]+'： '+before+' → '+after};
+  const rec={typeLabel:LABELS[type],productName:p.productName,productCode:p.productCode,requestedAt:at,before,after,
+    lark:'【返礼品変更申請】'+LABELS[type]+
+      '\n自治体： 塩尻市'+
+      '\n事業者： '+session.name+'（'+session.id+'）'+
+      '\n返礼品： '+p.productName+'（'+p.productCode+'）'+
+      '\n変更前： '+before+
+      '\n変更後： '+after+
+      '\n申請日時： '+at};
 
   const pp=pending[p.id]||(pending[p.id]={});
   if(type==='stock'){
