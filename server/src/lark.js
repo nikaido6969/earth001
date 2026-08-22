@@ -103,6 +103,48 @@ async function sendViaApp(card) {
   return { skipped: false, ok: true, mode: "app" };
 }
 
+function buildDigestCard({ today, items, leadDays }) {
+  const lines = items.map((it) => {
+    const when = it.remainingDays === 0 ? "**本日が受付終了日**" : `残り **${it.remainingDays}日**`;
+    const shipping = [it.shippingFrom, it.shippingTo].filter(Boolean).join(" 〜 ") || "未設定";
+    return [
+      `**${it.productName}**（${it.productCode}）`,
+      `事業者: ${it.operatorName}`,
+      `受付終了: ${it.acceptTo}（${when}）`,
+      `発送期間: ${shipping}`,
+    ].join("\n");
+  });
+
+  return {
+    header: {
+      title: { tag: "plain_text", content: `【受付終了間近】先行予約・期間限定 ${items.length}件` },
+      template: "orange",
+    },
+    elements: [
+      {
+        tag: "div",
+        text: {
+          tag: "lark_md",
+          content:
+            `${today} 時点で、受付終了日まで **${leadDays}日以内** の先行予約・期間限定の返礼品です。\n` +
+            "翌年の受付開始準備と、事業者への再掲載受付の承諾確認をお願いします。",
+        },
+      },
+      { tag: "hr" },
+      ...lines.flatMap((content, i) => [
+        { tag: "div", text: { tag: "lark_md", content } },
+        i < lines.length - 1 ? { tag: "hr" } : null,
+      ]).filter(Boolean),
+    ],
+  };
+}
+
+/** 受付終了が近い返礼品のリストをLarkへ通知する */
+export async function sendLarkExpiryDigest(digest) {
+  const card = buildDigestCard(digest);
+  return dispatch(card, "受付終了間近リスト");
+}
+
 /**
  * 変更申請内容をLarkへ送信する。
  * LARK_MODE=app なら指定ユーザーへDM（試験運用: 二階堂さん宛）、
@@ -110,18 +152,21 @@ async function sendViaApp(card) {
  * 設定が未完了の場合は送信をスキップする。
  */
 export async function sendLarkChangeNotification(request) {
-  const card = buildCard(request);
+  return dispatch(buildCard(request), "変更申請");
+}
 
+/** 設定に応じて DM / Webhook のいずれかで送信する */
+async function dispatch(card, label) {
   if (config.larkMode === "app") {
     if (!config.larkAppId || !config.larkAppSecret || !config.larkReceiveId) {
-      console.warn("[lark] LARK_APP_ID / LARK_APP_SECRET / LARK_RECEIVE_ID が未設定のため送信をスキップしました");
+      console.warn(`[lark] アプリの設定が未完了のため${label}の送信をスキップしました`);
       return { skipped: true };
     }
     return sendViaApp(card);
   }
 
   if (!config.larkWebhookUrl) {
-    console.warn("[lark] LARK_WEBHOOK_URL が未設定のため送信をスキップしました");
+    console.warn(`[lark] LARK_WEBHOOK_URL が未設定のため${label}の送信をスキップしました`);
     return { skipped: true };
   }
   return sendViaWebhook(card);

@@ -5,6 +5,7 @@ import { config } from "./config.js";
 import { authRouter } from "./routes/auth.js";
 import { operatorRouter } from "./routes/operator.js";
 import { adminRouter } from "./routes/admin.js";
+import { startReminderScheduler } from "./reminder.js";
 
 const app = express();
 
@@ -29,4 +30,5 @@ app.use((err, req, res, next) => {
 
 app.listen(config.port, () => {
   console.log(`事業者向け管理ポータル起動: http://localhost:${config.port}`);
+  startReminderScheduler();
 });

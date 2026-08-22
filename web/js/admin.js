@@ -50,6 +50,32 @@ function renderImportResult(res) {
   loadOperators();
 }
 
+document.getElementById("preview-btn").addEventListener("click", async () => {
+  const errEl = document.getElementById("import-error");
+  const resultEl = document.getElementById("import-result");
+  errEl.textContent = "";
+  resultEl.innerHTML = "";
+
+  try {
+    const res = await apiRequest("/admin/preview-master");
+    const total = res.operators.reduce((n, o) => n + o.productCount, 0);
+    resultEl.innerHTML = `
+      <p style="font-size:13px;">
+        返礼品マスタ ${res.totalProductsInMaster} 件から、対象事業者 <strong>${res.operators.length} 社</strong> ／
+        対象返礼品 <strong>${total} 件</strong> を抽出しました。
+      </p>
+      ${res.operators
+        .map(
+          (o) => `<div class="credential-box"><strong>${escapeHtml(o.operatorName)}</strong>（${o.productCount}件）<br>
+            ${o.products.map((p) => `${escapeHtml(p.productCode)} ${escapeHtml(p.productName)}`).join("<br>")}</div>`
+        )
+        .join("")}
+    `;
+  } catch (err) {
+    errEl.textContent = err.message;
+  }
+});
+
 document.getElementById("sync-btn").addEventListener("click", async () => {
   const municipality = document.getElementById("municipality").value.trim() || "塩尻市";
   const errEl = document.getElementById("import-error");

@@ -8,6 +8,8 @@ import { requireAdminAuth } from "../middleware/auth.js";
 import { parseMasterFile } from "../utils/importMaster.js";
 import { generatePassword, generateOperatorId } from "../utils/password.js";
 import { readMasterProducts } from "../sheets.js";
+import { filterToTargetScope } from "../scope.js";
+import { findExpiringProducts, sendExpiryDigest, todayJst } from "../reminder.js";
 
 export const adminRouter = Router();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 20 * 1024 * 1024 } });
@@ -36,24 +38,6 @@ adminRouter.post("/logout", (req, res) => {
 
 adminRouter.use(requireAdminAuth);
 
-/**
- * 試験導入スコープ（青果物：りんご・ぶどう類を扱う事業者）に絞り込む。
- * 事業者名・返礼品名のキーワードは config で設定でき、対象拡大時は環境変数で変更できる。
- */
-function filterToTargetScope(groups) {
-  const { targetOperators, targetProductKeywords } = config;
-
-  return groups
-    .filter((g) => !targetOperators.length || targetOperators.some((kw) => g.operatorName.includes(kw)))
-    .map((g) => ({
-      ...g,
-      products: targetProductKeywords.length
-        ? g.products.filter((p) => targetProductKeywords.some((kw) => p.productName.includes(kw)))
-        : g.products,
-    }))
-    .filter((g) => g.products.length > 0);
-}
-
 function groupByOperator(products) {
   const byOperator = new Map();
   for (const p of products) {
@@ -76,8 +60,13 @@ function upsertGroups(groups, municipality, prefix) {
   let seq = operators.length + 1;
 
   for (const group of groups) {
+    // 事業者IDは両方に値がある場合のみ照合する。
+    // null 同士を一致とみなすと、IDを持たない別々の事業者が同一視されてしまうため。
     let operator = operators.find(
-      (o) => o.municipality === municipality && (o.sourceOperatorId === group.operatorId || o.name === group.operatorName)
+      (o) =>
+        o.municipality === municipality &&
+        ((group.operatorId && o.sourceOperatorId && o.sourceOperatorId === group.operatorId) ||
+          o.name === group.operatorName)
     );
 
     let plainPassword = null;
@@ -170,6 +159,42 @@ adminRouter.post("/sync-master", async (req, res) => {
   }
 
   res.json(upsertGroups(groups, municipality, prefix));
+});
+
+// 塩尻市マスタから抽出される対象事業者・返礼品を、アカウント発行前に確認する（変更は行わない）
+adminRouter.get("/preview-master", async (req, res) => {
+  let products;
+  try {
+    products = await readMasterProducts();
+  } catch (err) {
+    return res.status(400).json({ error: `塩尻市マスタの読み取りに失敗しました: ${err.message}` });
+  }
+
+  const groups = filterToTargetScope(groupByOperator(products));
+  res.json({
+    totalProductsInMaster: products.length,
+    operators: groups.map((g) => ({
+      operatorName: g.operatorName,
+      productCount: g.products.length,
+      products: g.products.map((p) => ({ productCode: p.productCode, productName: p.productName })),
+    })),
+  });
+});
+
+// 受付終了が近い返礼品の一覧（リマインド対象の確認用）
+adminRouter.get("/expiring", (req, res) => {
+  const today = req.query.today || todayJst();
+  res.json({ today, leadDays: config.reminderLeadDays, items: findExpiringProducts(today) });
+});
+
+// リマインド通知を手動で送信する（動作確認用）
+adminRouter.post("/send-reminder", async (req, res) => {
+  try {
+    const result = await sendExpiryDigest(req.body?.today || todayJst());
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: `リマインド送信に失敗しました: ${err.message}` });
+  }
 });
 
 adminRouter.get("/operators", (req, res) => {
