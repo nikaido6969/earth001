@@ -7,6 +7,7 @@ import { config } from "../config.js";
 import { requireAdminAuth } from "../middleware/auth.js";
 import { parseMasterFile } from "../utils/importMaster.js";
 import { generatePassword, generateOperatorId } from "../utils/password.js";
+import { readMasterProducts } from "../sheets.js";
 
 export const adminRouter = Router();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 20 * 1024 * 1024 } });
@@ -35,20 +36,38 @@ adminRouter.post("/logout", (req, res) => {
 
 adminRouter.use(requireAdminAuth);
 
-// 塩尻市マスタ（xlsx/csv）をアップロードし、事業者ごとにID/パスワードを発行して返礼品を紐付ける
-adminRouter.post("/import-master", upload.single("file"), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: "ファイルが指定されていません" });
+/**
+ * 試験導入スコープ（青果物：りんご・ぶどう類を扱う事業者）に絞り込む。
+ * 事業者名・返礼品名のキーワードは config で設定でき、対象拡大時は環境変数で変更できる。
+ */
+function filterToTargetScope(groups) {
+  const { targetOperators, targetProductKeywords } = config;
 
-  const municipality = (req.body?.municipality || "塩尻市").trim();
-  const prefix = (req.body?.operatorIdPrefix || "SJR").trim();
+  return groups
+    .filter((g) => !targetOperators.length || targetOperators.some((kw) => g.operatorName.includes(kw)))
+    .map((g) => ({
+      ...g,
+      products: targetProductKeywords.length
+        ? g.products.filter((p) => targetProductKeywords.some((kw) => p.productName.includes(kw)))
+        : g.products,
+    }))
+    .filter((g) => g.products.length > 0);
+}
 
-  let groups;
-  try {
-    groups = parseMasterFile(req.file.buffer, req.file.originalname);
-  } catch (err) {
-    return res.status(400).json({ error: `マスタの解析に失敗しました: ${err.message}` });
+function groupByOperator(products) {
+  const byOperator = new Map();
+  for (const p of products) {
+    const { operatorName, ...rest } = p;
+    if (!byOperator.has(operatorName)) {
+      byOperator.set(operatorName, { operatorName, operatorId: null, products: [] });
+    }
+    byOperator.get(operatorName).products.push(rest);
   }
+  return Array.from(byOperator.values());
+}
 
+/** 事業者アカウントの発行と返礼品の紐付けを行う（ファイル取込・シート同期の共通処理） */
+function upsertGroups(groups, municipality, prefix) {
   const operators = operatorsStore.read();
   const products = productsStore.read();
   const created = [];
@@ -105,13 +124,52 @@ adminRouter.post("/import-master", upload.single("file"), (req, res) => {
   operatorsStore.write(operators);
   productsStore.write(products);
 
-  res.json({
+  return {
     ok: true,
     municipality,
     operatorsCreated: created,
     operatorsUpdated: updated,
     totalOperators: groups.length,
-  });
+  };
+}
+
+// 塩尻市マスタ（xlsx/csv）をアップロードし、事業者ごとにID/パスワードを発行して返礼品を紐付ける
+adminRouter.post("/import-master", upload.single("file"), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: "ファイルが指定されていません" });
+
+  const municipality = (req.body?.municipality || "塩尻市").trim();
+  const prefix = (req.body?.operatorIdPrefix || "SJR").trim();
+
+  let groups;
+  try {
+    groups = parseMasterFile(req.file.buffer, req.file.originalname);
+  } catch (err) {
+    return res.status(400).json({ error: `マスタの解析に失敗しました: ${err.message}` });
+  }
+
+  res.json(upsertGroups(filterToTargetScope(groups), municipality, prefix));
+});
+
+// 塩尻市マスタ（Googleスプレッドシート）から直接読み取って同期する
+adminRouter.post("/sync-master", async (req, res) => {
+  const municipality = (req.body?.municipality || "塩尻市").trim();
+  const prefix = (req.body?.operatorIdPrefix || "SJR").trim();
+
+  let products;
+  try {
+    products = await readMasterProducts();
+  } catch (err) {
+    return res.status(400).json({ error: `塩尻市マスタの読み取りに失敗しました: ${err.message}` });
+  }
+
+  const groups = filterToTargetScope(groupByOperator(products));
+  if (!groups.length) {
+    return res.status(400).json({
+      error: `対象事業者が見つかりませんでした（対象事業者: ${config.targetOperators.join(", ") || "指定なし"}）`,
+    });
+  }
+
+  res.json(upsertGroups(groups, municipality, prefix));
 });
 
 adminRouter.get("/operators", (req, res) => {

@@ -36,13 +36,40 @@ document.getElementById("logout-btn").addEventListener("click", async () => {
   window.location.reload();
 });
 
+function renderImportResult(res) {
+  const resultEl = document.getElementById("import-result");
+  resultEl.innerHTML = `
+    <p style="font-size:13px;">取込完了: 対象事業者 ${res.totalOperators} 件（新規発行 ${res.operatorsCreated.length} 件 / 更新 ${res.operatorsUpdated.length} 件）</p>
+    ${res.operatorsCreated
+      .map(
+        (o) => `<div class="credential-box">新規発行: <strong>${escapeHtml(o.name)}</strong><br>事業者ID: <strong>${o.operatorId}</strong> ／ パスワード: <strong>${o.password}</strong>（返礼品 ${o.productCount}件）<br>この情報は再表示されません。事業者へ安全な方法で通知してください。</div>`
+      )
+      .join("")}
+  `;
+  showToast("マスタを取り込みました");
+  loadOperators();
+}
+
+document.getElementById("sync-btn").addEventListener("click", async () => {
+  const municipality = document.getElementById("municipality").value.trim() || "塩尻市";
+  const errEl = document.getElementById("import-error");
+  errEl.textContent = "";
+  document.getElementById("import-result").innerHTML = "";
+
+  try {
+    const res = await apiRequest("/admin/sync-master", { method: "POST", body: { municipality } });
+    renderImportResult(res);
+  } catch (err) {
+    errEl.textContent = err.message;
+  }
+});
+
 document.getElementById("import-btn").addEventListener("click", async () => {
   const fileInput = document.getElementById("master-file");
   const municipality = document.getElementById("municipality").value.trim() || "塩尻市";
   const errEl = document.getElementById("import-error");
-  const resultEl = document.getElementById("import-result");
   errEl.textContent = "";
-  resultEl.innerHTML = "";
+  document.getElementById("import-result").innerHTML = "";
 
   if (!fileInput.files.length) {
     errEl.textContent = "ファイルを選択してください";
@@ -55,16 +82,7 @@ document.getElementById("import-btn").addEventListener("click", async () => {
 
   try {
     const res = await apiRequest("/admin/import-master", { method: "POST", body: fd, isForm: true });
-    resultEl.innerHTML = `
-      <p style="font-size:13px;">取込完了: 対象事業者 ${res.totalOperators} 件（新規発行 ${res.operatorsCreated.length} 件 / 更新 ${res.operatorsUpdated.length} 件）</p>
-      ${res.operatorsCreated
-        .map(
-          (o) => `<div class="credential-box">新規発行: <strong>${o.name}</strong><br>事業者ID: <strong>${o.operatorId}</strong> ／ パスワード: <strong>${o.password}</strong>（返礼品 ${o.productCount}件）<br>この情報は再表示されません。事業者へ安全な方法で通知してください。</div>`
-        )
-        .join("")}
-    `;
-    showToast("マスタを取り込みました");
-    loadOperators();
+    renderImportResult(res);
   } catch (err) {
     errEl.textContent = err.message;
   }

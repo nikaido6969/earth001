@@ -24,15 +24,18 @@
     <div id="admin-panel" style="display:none;">
       <div class="section-title">塩尻市マスタの取込</div>
       <p style="font-size:12px;color:#6b7570;">
-        塩尻市マスタ（返礼品マスタ）の xlsx / csv ファイルをアップロードすると、事業者ごとに担当返礼品を抽出し、
-        未登録の事業者にはログイン用ID・パスワードを自動発行します。列見出しの対応表は
-        <code>docs/sample_master_template.csv</code> を参照してください。
+        塩尻市マスタ「返礼品マスタ」から、対象事業者（青果物：りんご・ぶどう類）の取り扱い返礼品を抽出し、
+        未登録の事業者にはログイン用ID・パスワードを自動発行します。
+        Googleスプレッドシートから直接同期するか、xlsx / csv ファイルをアップロードしてください。
       </p>
       <label for="municipality">自治体名</label>
       <input type="text" id="municipality" value="塩尻市" />
-      <label for="master-file">マスタファイル（.xlsx / .csv）</label>
+
+      <button class="btn-primary" id="sync-btn">塩尻市マスタ（スプレッドシート）から同期する</button>
+
+      <label for="master-file">またはマスタファイルをアップロード（.xlsx / .csv）</label>
       <input type="file" id="master-file" accept=".xlsx,.xls,.csv" />
-      <button class="btn-primary" id="import-btn">取り込む</button>
+      <button class="btn-secondary" id="import-btn">ファイルから取り込む</button>
       <div class="error-msg" id="import-error"></div>
       <div id="import-result"></div>
 

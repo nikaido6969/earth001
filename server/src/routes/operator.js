@@ -2,6 +2,7 @@ import { Router } from "express";
 import { operatorsStore, productsStore, changeRequestsStore, nextId } from "../db.js";
 import { requireOperatorAuth } from "../middleware/auth.js";
 import { sendLarkChangeNotification } from "../lark.js";
+import { applyChangeToMaster } from "../sheets.js";
 
 export const operatorRouter = Router();
 operatorRouter.use(requireOperatorAuth);
@@ -123,6 +124,21 @@ operatorRouter.post("/products/:id/change", async (req, res) => {
   changeRequests.push(changeRequest);
   changeRequestsStore.write(changeRequests);
 
+  // 送信と同時に塩尻市マスタへ反映（該当セルを黄色で塗り、C列備考に更新前の値と変更内容を記載）
+  let sheetResult = { skipped: true };
+  try {
+    sheetResult = await applyChangeToMaster({ type, payload, product, operatorName: operator.name });
+  } catch (err) {
+    console.error("[operator] 塩尻市マスタ更新エラー", err);
+    sheetResult = { skipped: false, ok: false, error: err.message };
+  }
+
+  const masterNote = sheetResult.skipped
+    ? "未反映（マスタ連携が未設定）"
+    : sheetResult.ok
+      ? `${sheetResult.sheetTitle} ${sheetResult.row}行目を更新（${sheetResult.updatedColumns.join(", ") || "備考のみ"}）`
+      : `反映失敗: ${sheetResult.error}`;
+
   let larkResult = { skipped: true };
   try {
     larkResult = await sendLarkChangeNotification({
@@ -133,15 +149,18 @@ operatorRouter.post("/products/:id/change", async (req, res) => {
       productCode: product.productCode,
       type,
       summary,
-      detail: JSON.stringify(payload),
-      requestedAt: new Date(requestedAt).toLocaleString("ja-JP"),
+      masterNote,
+      requestedAt: new Date(requestedAt).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" }),
     });
   } catch (err) {
     console.error("[operator] Lark通知エラー", err);
     larkResult = { skipped: false, ok: false, error: String(err) };
   }
 
-  res.json({ ok: true, product, changeRequest, lark: larkResult });
+  changeRequest.masterSync = sheetResult;
+  changeRequestsStore.write(changeRequests);
+
+  res.json({ ok: true, product, changeRequest, lark: larkResult, master: sheetResult });
 });
 
 operatorRouter.get("/change-requests", (req, res) => {

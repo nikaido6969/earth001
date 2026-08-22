@@ -6,11 +6,14 @@ import { config } from "../config.js";
 
 export const authRouter = Router();
 
+// 事業者は一度ログインしたら再度パスワードを求めない運用のため、長期セッションにする
+const SESSION_MS = 1000 * 60 * 60 * 24 * config.operatorSessionDays;
+
 const COOKIE_OPTS = {
   httpOnly: true,
   sameSite: "lax",
   secure: process.env.NODE_ENV === "production",
-  maxAge: 1000 * 60 * 60 * 12, // 12時間
+  maxAge: SESSION_MS,
 };
 
 authRouter.post("/login", (req, res) => {
@@ -33,7 +36,7 @@ authRouter.post("/login", (req, res) => {
   const token = jwt.sign(
     { role: "operator", id: operator.id, operatorId: operator.operatorId, name: operator.name, municipality: operator.municipality },
     config.jwtSecret,
-    { expiresIn: "12h" }
+    { expiresIn: `${config.operatorSessionDays}d` }
   );
 
   res.cookie("operator_token", token, COOKIE_OPTS);
