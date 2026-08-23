@@ -1,4 +1,4 @@
-<title>塩尻市 返礼品管理ポータル</title>
+<title>返礼品管理ポータル</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap">
 <style>
 :root{
@@ -244,14 +244,21 @@ const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const TK='sjr_session',PD='sjr_pending',LG='sjr_log',RN='sjr_renew',RNN='sjr_renew_note';
 
+/* ============ 自治体（アプリ内で切替可能） ============ */
+const MUNI={
+ shiojiri:{name:'塩尻市'},
+ kijimadaira:{name:'木島平村'}
+};
+
 /* ============ 事業者アカウント（試験用） ============ */
 const ACCOUNTS=[
- {id:'TEST01',name:'テスト事業者（二階堂）',h:'89929e419c1a23c0a2e36a214cfcb593c002dc020c4078721d0132ff774c70d4'},
- {id:'SJR001',name:'株式会社ベジサコ',h:'6d4665c4ee5df14f6aba44b602b607566f7005189d29eeca429be8563b2bbeb5'},
- {id:'SJR002',name:'上條農園',h:'affa6e6a4c9617973a79cd1025c9e6afb577f0d48868fd646b4036b98b28fac1'},
- {id:'SJR003',name:'有限会社 野村農場（米）',h:'565c1f4e7621fad88095e0b6b0c328e090b17c245fd89865c2c758dcd32edf1b'},
- {id:'SJR004',name:'株式会社アクアファームくるめ',h:'36d06dd95397141ed89b6ab47cea333c816ca00cccbd389777ea9633eb5f41dd'},
- {id:'SJR005',name:'生産者直売所 アルプス市場',h:'b5913fd5b4418ad0dcf1775d3e8a941fe65ba16f541966a8f884a879d9daeca0'}
+ {id:'TEST01',name:'テスト事業者（二階堂）',muni:'shiojiri',h:'89929e419c1a23c0a2e36a214cfcb593c002dc020c4078721d0132ff774c70d4'},
+ {id:'SJR001',name:'株式会社ベジサコ',muni:'shiojiri',h:'6d4665c4ee5df14f6aba44b602b607566f7005189d29eeca429be8563b2bbeb5'},
+ {id:'SJR002',name:'上條農園',muni:'shiojiri',h:'affa6e6a4c9617973a79cd1025c9e6afb577f0d48868fd646b4036b98b28fac1'},
+ {id:'SJR003',name:'有限会社 野村農場（米）',muni:'shiojiri',h:'565c1f4e7621fad88095e0b6b0c328e090b17c245fd89865c2c758dcd32edf1b'},
+ {id:'SJR004',name:'株式会社アクアファームくるめ',muni:'shiojiri',h:'36d06dd95397141ed89b6ab47cea333c816ca00cccbd389777ea9633eb5f41dd'},
+ {id:'SJR005',name:'生産者直売所 アルプス市場',muni:'shiojiri',h:'b5913fd5b4418ad0dcf1775d3e8a941fe65ba16f541966a8f884a879d9daeca0'},
+ {id:'KJM001',name:'（一財）木島平村農業振興公社',muni:'kijimadaira',h:'10c226eb6cf863859214b0e73b7fe3bcb6a7948806bad7f1c130e3b0acdf31ba'}
 ];
 
 /* ============ 返礼品（塩尻市マスタ 返礼品マスタ より抽出） ============ */
@@ -285,7 +292,10 @@ const PRODUCTS=[
  mk('SJR004',['Q02','【家庭用】塩尻市産 シャインマスカット1.8kg（2房〜5房）',4500,35,'2026-09-01','2026-10-15','2026-06-01','2026-08-26']),
  mk('SJR005',['A01','おまかせ野菜セット 2〜3人前',3000,25,'','','2026-08-01','2027-03-31']),
  mk('SJR005',['A02','【ご家庭用】シャインマスカットの入ったお任せぶどうセット',4500,30,'2026-09-30','2026-10-20','2026-06-01','2026-08-23']),
- mk('SJR005',['A03','【ご家庭用】シャインマスカット 2kg',5000,20,'2026-09-30','2026-10-20','2026-06-01','2026-08-23'])
+ mk('SJR005',['A03','【ご家庭用】シャインマスカット 2kg',5000,20,'2026-09-30','2026-10-20','2026-06-01','2026-08-23']),
+ mk('KJM001',['K01','木島平村産 コシヒカリ 5kg（白米）',3500,150,'','','2026-08-01','2027-03-31']),
+ mk('KJM001',['K02','木島平村産 コシヒカリ 10kg（白米）',6500,100,'','','2026-08-01','2027-03-31']),
+ mk('KJM001',['K03','木島平村産 コシヒカリ 5kg（玄米）',3500,60,'','','2026-08-01','2027-03-31'])
 ].map((x,i)=>({id:i+1,...x}));
 
 const LABELS={stock:'在庫調整',price:'商品代変更',desiredDate:'変更希望日',shippingPeriod:'発送期間変更',acceptPeriod:'受付期間変更'};
@@ -445,7 +455,7 @@ document.addEventListener('change',e=>{
   const at=new Date().toLocaleString('ja-JP',{timeZone:'Asia/Tokyo'});
   sentLog.unshift({typeLabel:'翌年度の受付可否',productName:p.productName,productCode:p.productCode,requestedAt:at,
     lark:'【翌年度の受付可否】'+
-      '\n自治体： 塩尻市'+
+      '\n自治体： '+(MUNI[session.muni]?MUNI[session.muni].name:'塩尻市')+
       '\n事業者： '+session.name+'（'+session.id+'）'+
       '\n返礼品： '+p.productName+'（'+p.productCode+'）'+
       '\n今年度の受付終了日： '+eff(p,'acceptTo')+
@@ -478,7 +488,7 @@ document.addEventListener('click',e=>{
   const at=new Date().toLocaleString('ja-JP',{timeZone:'Asia/Tokyo'});
   sentLog.unshift({typeLabel:'翌年度の受付可否',productName:p.productName,productCode:p.productCode,requestedAt:at,
     lark:'【翌年度の受付可否】'+
-      '\n自治体： 塩尻市'+
+      '\n自治体： '+(MUNI[session.muni]?MUNI[session.muni].name:'塩尻市')+
       '\n事業者： '+session.name+'（'+session.id+'）'+
       '\n返礼品： '+p.productName+'（'+p.productCode+'）'+
       '\n今年度の受付終了日： '+eff(p,'acceptTo')+
@@ -610,7 +620,7 @@ function submit(p,type,pl){
   const at=new Date().toLocaleString('ja-JP',{timeZone:'Asia/Tokyo'});
   const rec={typeLabel:LABELS[type],productName:p.productName,productCode:p.productCode,requestedAt:at,before,after,
     lark:'【返礼品変更申請】'+LABELS[type]+
-      '\n自治体： 塩尻市'+
+      '\n自治体： '+(MUNI[session.muni]?MUNI[session.muni].name:'塩尻市')+
       '\n事業者： '+session.name+'（'+session.id+'）'+
       '\n返礼品： '+p.productName+'（'+p.productCode+'）'+
       '\n変更前： '+before+
@@ -654,8 +664,9 @@ $('#lf').addEventListener('submit',async e=>{
   const acc=ACCOUNTS.find(a=>a.id===id);
   const ok=acc&&(await sha(id+':'+pw+':shiojiri2026'))===acc.h;
   if(!ok){$('#le').textContent='事業者IDまたはパスワードが正しくありません';b.disabled=false;b.textContent='ログイン';return}
-  try{localStorage.setItem(TK,JSON.stringify({id:acc.id,name:acc.name}))}catch(e){}
-  start({id:acc.id,name:acc.name});
+  const s={id:acc.id,name:acc.name,muni:acc.muni};
+  try{localStorage.setItem(TK,JSON.stringify(s))}catch(e){}
+  start(s);
 });
 
 $('#lo').addEventListener('click',()=>{
@@ -668,9 +679,10 @@ function doLogout(){
 
 function start(s){
   session=s;
+  if(!session.muni){const a=ACCOUNTS.find(a=>a.id===s.id);session.muni=a?a.muni:'shiojiri'}
   products=PRODUCTS.filter(p=>p.operatorId===s.id);
   $('#on').textContent=s.name;
-  $('#om').textContent='塩尻市 ／ 事業者ID '+s.id;
+  $('#om').textContent=(MUNI[session.muni]?MUNI[session.muni].name:'塩尻市')+' ／ 事業者ID '+s.id;
   $('#login').classList.add('hide');$('#app').classList.remove('hide');
   render();renderDue();renderLog();
 }
