@@ -590,9 +590,9 @@ function submit(p,type,pl){
   let summary='',before='',after='';
   if(type==='stock'){
     if(pl.action==='adjust'){
-      const ns=Math.max(0,Number(eff(p,'stock'))+pl.delta);
-      before=String(eff(p,'stock'));after=String(ns);
-      summary='在庫数を '+(pl.delta>0?'+':'')+pl.delta+' 調整（'+before+' → '+after+'）';
+      const ns=Math.max(0,Number(eff(p,'stock'))+pl.delta),sign=pl.delta>0?'+':'';
+      before=String(eff(p,'stock'));after=ns+'（'+sign+pl.delta+'）';
+      summary='在庫数を '+sign+pl.delta+' 調整（'+before+' → '+ns+'）';
     }else{
       before=eff(p,'stockStatus')==='paused'?'停止':'受付中';
       after=pl.action==='pause'?'停止':'受付中';
