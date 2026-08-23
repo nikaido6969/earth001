@@ -170,6 +170,12 @@ header .sub{font-size:10.5px;opacity:.86;margin-top:3px;letter-spacing:.02em}
 .renew-s.ok{color:var(--brand-deep)}
 .renew-s.no{color:var(--danger)}
 .renew-s.wait{color:var(--amber)}
+.renew-note{width:100%;margin-top:9px;padding:11px 12px;border:1px solid var(--line);border-radius:10px;font-size:13px;
+  background:var(--surface-2);color:var(--ink);resize:vertical;min-height:64px;font-family:inherit;line-height:1.6}
+.renew-note:focus{border-color:var(--brand);outline:none;background:var(--surface)}
+.renew-note-send{width:100%;margin-top:8px}
+.renew-note-sent{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:12.5px;
+  color:var(--ink);margin-top:9px;line-height:1.7;white-space:pre-wrap}
 </style>
 
 <div class="stage">
@@ -236,7 +242,7 @@ header .sub{font-size:10.5px;opacity:.86;margin-top:3px;letter-spacing:.02em}
 <script>
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const TK='sjr_session',PD='sjr_pending',LG='sjr_log',RN='sjr_renew';
+const TK='sjr_session',PD='sjr_pending',LG='sjr_log',RN='sjr_renew',RNN='sjr_renew_note';
 
 /* ============ 事業者アカウント（試験用） ============ */
 const ACCOUNTS=[
@@ -285,12 +291,13 @@ const PRODUCTS=[
 const LABELS={stock:'在庫調整',price:'商品代変更',desiredDate:'変更希望日',shippingPeriod:'発送期間変更',acceptPeriod:'受付期間変更'};
 
 /* 翌年度の受付可否 の選択肢 */
-const RENEW=['未回答','翌年度も受付する（承諾）','内容を変更して受付する','翌年度は受付しない','検討中（後日連絡します）'];
+const RENEW=['未回答','翌年度も受付する（承諾）','内容を変更して受付する','翌年度は受付しない','検討中（後日連絡します）','その他'];
 
-let session=null,products=[],pending={},sentLog=[],renew={};
+let session=null,products=[],pending={},sentLog=[],renew={},renewNote={};
 try{pending=JSON.parse(localStorage.getItem(PD)||'{}')}catch(e){}
 try{sentLog=JSON.parse(localStorage.getItem(LG)||'[]')}catch(e){}
 try{renew=JSON.parse(localStorage.getItem(RN)||'{}')}catch(e){}
+try{renewNote=JSON.parse(localStorage.getItem(RNN)||'{}')}catch(e){}
 
 function toast(m,ms){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('on'),ms||3000)}
 async function sha(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
@@ -394,6 +401,7 @@ function renderDue(){
    '<span style="opacity:.8">基準日 '+today()+'</span></div>'+
    (items.length?items.map(({p,d})=>{
      const a=renew[p.id],ok=a===RENEW[1]||a===RENEW[2],no=a===RENEW[3];
+     const other=a===RENEW[5],rn=renewNote[p.id]||{};
      return '<div class="card"><div class="pn">'+esc(p.productName)+
      '<span class="pill p-due">'+(d===0?'本日が受付終了日':'残り '+d+'日')+'</span></div>'+
      '<div class="pc">商品コード '+esc(p.productCode)+'</div>'+
@@ -404,9 +412,16 @@ function renderDue(){
        '<select data-renew="'+p.id+'" aria-label="翌年度の受付可否">'+
          RENEW.map(o=>'<option'+(a===o?' selected':'')+'>'+o+'</option>').join('')+
        '</select>'+
-       (a&&a!==RENEW[0]?'<div class="renew-s '+(no?'no':a===RENEW[4]?'wait':'ok')+'">'+
+       (a&&a!==RENEW[0]&&!other?'<div class="renew-s '+(no?'no':a===RENEW[4]?'wait':'ok')+'">'+
          (no?'翌年度は受付しないものとして承りました。':a===RENEW[4]?'決定次第、ご連絡お待ちしております。':'ご承諾ありがとうございます。翌年度の受付開始の準備を進めます。')+
        '</div>':'')+
+       (other&&rn.sent?
+         '<div class="renew-note-sent">送信内容：\n'+esc(rn.text)+'</div>'+
+         '<div class="renew-s wait">内容を確認のうえ、担当者よりご連絡いたします。</div>'
+       :other?
+         '<textarea class="renew-note" data-renew-note="'+p.id+'" placeholder="ご要望などをご記入ください（例：規格を変えて再開したい、時期を変えたい 等）">'+esc(rn.text||'')+'</textarea>'+
+         '<button class="btn btn-p renew-note-send" data-renew-send="'+p.id+'">この内容で送信</button>'
+       :'')+
      '</div></div>';
    }).join(''):'<div class="empty">受付終了が1週間以内に迫っている<br>先行予約・期間限定の返礼品はありません。</div>');
 }
@@ -416,7 +431,16 @@ document.addEventListener('change',e=>{
   const p=products.find(x=>x.id===+s.dataset.renew),v=s.value;
   renew[p.id]=v;
   try{localStorage.setItem(RN,JSON.stringify(renew))}catch(err){}
+
   if(v===RENEW[0]){renderDue();return}
+  if(v===RENEW[5]){
+    // その他: 自由記入欄を表示するだけで、送信はまだ行わない
+    if(!renewNote[p.id])renewNote[p.id]={text:'',sent:false};
+    else renewNote[p.id].sent=false;
+    try{localStorage.setItem(RNN,JSON.stringify(renewNote))}catch(err){}
+    renderDue();
+    return;
+  }
 
   const at=new Date().toLocaleString('ja-JP',{timeZone:'Asia/Tokyo'});
   sentLog.unshift({typeLabel:'翌年度の受付可否',productName:p.productName,productCode:p.productCode,requestedAt:at,
@@ -430,6 +454,40 @@ document.addEventListener('change',e=>{
   try{localStorage.setItem(LG,JSON.stringify(sentLog.slice(0,60)))}catch(err){}
   renderDue();renderLog();
   toast('回答を送信しました　'+v,3400);
+  if(navigator.vibrate)navigator.vibrate([8,40,8]);
+});
+
+document.addEventListener('input',e=>{
+  const t=e.target.closest('textarea[data-renew-note]');if(!t)return;
+  const id=+t.dataset.renewNote;
+  renewNote[id]=renewNote[id]||{text:'',sent:false};
+  renewNote[id].text=t.value;
+  try{localStorage.setItem(RNN,JSON.stringify(renewNote))}catch(err){}
+});
+
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-renew-send]');if(!b)return;
+  const p=products.find(x=>x.id===+b.dataset.renewSend);
+  const rn=renewNote[p.id]||{text:''};
+  const text=(rn.text||'').trim();
+  if(!text)return toast('内容をご記入ください');
+
+  rn.text=text;rn.sent=true;renewNote[p.id]=rn;
+  try{localStorage.setItem(RNN,JSON.stringify(renewNote))}catch(err){}
+
+  const at=new Date().toLocaleString('ja-JP',{timeZone:'Asia/Tokyo'});
+  sentLog.unshift({typeLabel:'翌年度の受付可否',productName:p.productName,productCode:p.productCode,requestedAt:at,
+    lark:'【翌年度の受付可否】'+
+      '\n自治体： 塩尻市'+
+      '\n事業者： '+session.name+'（'+session.id+'）'+
+      '\n返礼品： '+p.productName+'（'+p.productCode+'）'+
+      '\n今年度の受付終了日： '+eff(p,'acceptTo')+
+      '\nご回答： その他'+
+      '\n内容： '+text+
+      '\n回答日時： '+at});
+  try{localStorage.setItem(LG,JSON.stringify(sentLog.slice(0,60)))}catch(err){}
+  renderDue();renderLog();
+  toast('送信しました',3400);
   if(navigator.vibrate)navigator.vibrate([8,40,8]);
 });
 
