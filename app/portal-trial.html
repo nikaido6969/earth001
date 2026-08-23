@@ -366,12 +366,12 @@ function render(){
         '<div>発送期間<b'+(pp.shippingFrom?' class="req"':'')+'>'+fd(eff(p,'shippingFrom'))+'<br>〜 '+fd(eff(p,'shippingTo'))+'</b></div>'+
         '<div>受付期間<b'+(pp.acceptFrom?' class="req"':'')+'>'+fd(eff(p,'acceptFrom'))+'<br>〜 '+fd(eff(p,'acceptTo'))+'</b></div>'+
       '</div>'+
-      (pp.desiredDate?'<div class="pc" style="margin-top:10px"><span class="pill p-req">変更希望日 申請中</span> '+pp.desiredDate+'</div>':'')+
+      (pp.priceDesiredDate?'<div class="pc" style="margin-top:10px"><span class="pill p-req">商品代 反映希望日</span> '+pp.priceDesiredDate+'</div>':'')+
+      (pp.stockDesiredDate?'<div class="pc" style="margin-top:6px"><span class="pill p-req">受付停止 希望日</span> '+pp.stockDesiredDate+'</div>':'')+
       '<div class="acts">'+
         '<button class="chip" data-a="stock" data-id="'+p.id+'">在庫を増減する</button>'+
         '<button class="chip" data-a="toggle" data-id="'+p.id+'">'+(st==='paused'?'受付を再開する':'受付を停止する')+'</button>'+
         '<button class="chip" data-a="price" data-id="'+p.id+'">商品代を変更する</button>'+
-        '<button class="chip" data-a="desiredDate" data-id="'+p.id+'">変更希望日を伝える</button>'+
         '<button class="chip" data-a="shippingPeriod" data-id="'+p.id+'">発送期間を変更する</button>'+
         '<button class="chip" data-a="acceptPeriod" data-id="'+p.id+'">受付期間を変更する</button>'+
       '</div></div>';
@@ -467,12 +467,13 @@ document.addEventListener('click',e=>{
   const p=products.find(x=>x.id===+b.dataset.id),a=b.dataset.a;
   if(a==='toggle'){
     const paused=eff(p,'stockStatus')==='paused';
-    return confirmSheet(paused?'受付を再開します。よろしいですか？':'受付を停止します。よろしいですか？',
-      ()=>submit(p,'stock',{action:paused?'resume':'pause'}));
+    if(paused){
+      return confirmSheet('受付を再開します。よろしいですか？',()=>submit(p,'stock',{action:'resume'}));
+    }
+    return shStop(p);
   }
   if(a==='stock')return shStock(p);
   if(a==='price')return shPrice(p);
-  if(a==='desiredDate')return shDate(p);
   if(a==='shippingPeriod')return shPeriod(p,'shippingPeriod','発送期間の変更','shippingFrom','shippingTo');
   if(a==='acceptPeriod')return shPeriod(p,'acceptPeriod','受付期間の変更','acceptFrom','acceptTo');
 });
@@ -501,20 +502,22 @@ function shStock(p){
 }
 function shPrice(p){
   const cur=Number(eff(p,'price'));
-  open('<h2>商品代を変更する</h2><p class="hint">'+esc(p.productName)+'<br>現在の商品代（税込） <b>'+cur.toLocaleString()+'円</b><br>変更後の金額を入力してください。</p>'+
+  open('<h2>商品代を変更する</h2><p class="hint">'+esc(p.productName)+'<br>現在の商品代（税込） <b>'+cur.toLocaleString()+'円</b></p>'+
+   '<div class="secl">変更希望日</div><div id="wd"></div>'+
+   '<div class="secl" style="margin-top:16px">変更後の金額</div>'+
    '<div class="pricebox"><input type="text" inputmode="numeric" id="pin" placeholder="0" value="'+cur+'" autocomplete="off"><span class="yen">円</span></div>'+FOOT);
+  const dw=dateWheel($('#wd'),(pending[p.id]||{}).priceDesiredDate);
   const inp=$('#pin');
   const norm=()=>Number(inp.value.replace(/[^\d]/g,''))||0;
   inp.addEventListener('input',()=>{const n=norm();inp.value=n?String(n):''});
-  inp.focus();inp.select();
   $('#cx').onclick=close;
-  $('#ok').onclick=()=>{const v=norm();if(v<=0)return toast('商品代を入力してください');submit(p,'price',{newPrice:v})};
+  $('#ok').onclick=()=>{const v=norm();if(v<=0)return toast('商品代を入力してください');submit(p,'price',{newPrice:v,desiredDate:dw.get()})};
 }
-function shDate(p){
-  open('<h2>変更希望日を伝える</h2><p class="hint">'+esc(p.productName)+'<br>スクロールして年・月・日を選び、送信してください。<br>※ご希望に沿えるまで、お時間がかかる場合がございます。</p><div id="w"></div>'+FOOT);
-  const w=dateWheel($('#w'),(pending[p.id]||{}).desiredDate);
+function shStop(p){
+  open('<h2>受付を停止する</h2><p class="hint">'+esc(p.productName)+'<br>停止を希望する日を選び、送信してください。</p><div class="secl">希望停止日</div><div id="wd"></div>'+FOOT);
+  const dw=dateWheel($('#wd'),(pending[p.id]||{}).stockDesiredDate);
   $('#cx').onclick=close;
-  $('#ok').onclick=()=>submit(p,'desiredDate',{desiredDate:w.get()});
+  $('#ok').onclick=()=>submit(p,'stock',{action:'pause',desiredDate:dw.get()});
 }
 function shPeriod(p,type,title,ff,tf){
   open('<h2>'+title+'</h2><p class="hint">'+esc(p.productName)+'<br>スクロールして開始日と終了日を選び、送信してください。</p>'+
@@ -534,14 +537,11 @@ function submit(p,type,pl){
     }else{
       before=eff(p,'stockStatus')==='paused'?'停止':'受付中';
       after=pl.action==='pause'?'停止':'受付中';
-      summary='在庫受付を「'+after+'」に変更';
+      summary='在庫受付を「'+after+'」に変更'+(pl.desiredDate?'（希望日 '+pl.desiredDate+'）':'');
     }
   }else if(type==='price'){
     before=Number(eff(p,'price')).toLocaleString()+'円';after=pl.newPrice.toLocaleString()+'円';
-    summary='商品代を '+before+' → '+after+' に変更';
-  }else if(type==='desiredDate'){
-    before='—';after=pl.desiredDate;
-    summary='変更希望日 '+pl.desiredDate+'（お時間がかかる場合がございます）';
+    summary='商品代を '+before+' → '+after+' に変更'+(pl.desiredDate?'（反映希望日 '+pl.desiredDate+'）':'');
   }else{
     const ff=type==='shippingPeriod'?'shippingFrom':'acceptFrom',tf=type==='shippingPeriod'?'shippingTo':'acceptTo';
     before=fd(eff(p,ff))+' 〜 '+fd(eff(p,tf));after=pl.from+' 〜 '+pl.to;
@@ -556,14 +556,17 @@ function submit(p,type,pl){
       '\n返礼品： '+p.productName+'（'+p.productCode+'）'+
       '\n変更前： '+before+
       '\n変更後： '+after+
+      (pl.desiredDate?'\n希望日： '+pl.desiredDate:'')+
       '\n申請日時： '+at};
 
   const pp=pending[p.id]||(pending[p.id]={});
   if(type==='stock'){
     if(pl.action==='adjust')pp.stock=Math.max(0,Number(eff(p,'stock'))+pl.delta);
-    else pp.stockStatus=pl.action==='pause'?'paused':'active';
-  }else if(type==='price')pp.price=pl.newPrice;
-  else if(type==='desiredDate')pp.desiredDate=pl.desiredDate;
+    else{
+      pp.stockStatus=pl.action==='pause'?'paused':'active';
+      if(pl.action==='pause')pp.stockDesiredDate=pl.desiredDate;else delete pp.stockDesiredDate;
+    }
+  }else if(type==='price'){pp.price=pl.newPrice;pp.priceDesiredDate=pl.desiredDate}
   else if(type==='shippingPeriod'){pp.shippingFrom=pl.from;pp.shippingTo=pl.to}
   else if(type==='acceptPeriod'){pp.acceptFrom=pl.from;pp.acceptTo=pl.to}
 
