@@ -245,13 +245,13 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 const TK='sjr_session',PD='sjr_pending',LG='sjr_log',RN='sjr_renew',RNN='sjr_renew_note';
 
 /* ============ 自治体（アプリ内で切替可能） ============ */
-const MUNI={
+let MUNI={
  shiojiri:{name:'塩尻市'},
  kijimadaira:{name:'木島平村'}
 };
 
 /* ============ 事業者アカウント（試験用） ============ */
-const ACCOUNTS=[
+let ACCOUNTS=[
  {id:'TEST01',name:'テスト事業者（二階堂）',muni:'shiojiri',h:'89929e419c1a23c0a2e36a214cfcb593c002dc020c4078721d0132ff774c70d4'},
  {id:'SJR001',name:'株式会社ベジサコ',muni:'shiojiri',h:'6d4665c4ee5df14f6aba44b602b607566f7005189d29eeca429be8563b2bbeb5'},
  {id:'SJR002',name:'上條農園',muni:'shiojiri',h:'affa6e6a4c9617973a79cd1025c9e6afb577f0d48868fd646b4036b98b28fac1'},
@@ -281,7 +281,7 @@ const V=[
  ['G22','旬のおまかせりんご（シナノゴールド・シナノスイート・ぐんま名月）約5kg',5000,40,'2026-10-10','2026-11-30','2026-08-01','2026-11-20']
 ];
 const mk=(o,r)=>({operatorId:o,productCode:r[0],productName:r[1],price:r[2],stock:r[3],stockStatus:'active',shippingFrom:r[4],shippingTo:r[5],acceptFrom:r[6],acceptTo:r[7]});
-const PRODUCTS=[
+let PRODUCTS=[
  ...V.map(r=>mk('TEST01',r)),
  ...V.map(r=>mk('SJR001',r)),
  mk('SJR002',['B01','ながいも 5kg',4000,60,'','','2026-08-01','2027-03-31']),
@@ -680,7 +680,7 @@ $('#lo').addEventListener('click',()=>{
 });
 function doLogout(){
   try{localStorage.removeItem(TK);localStorage.removeItem(PD);localStorage.removeItem(LG)}catch(e){}
-  location.reload();
+  location.href=location.pathname;
 }
 
 function start(s){
@@ -693,7 +693,33 @@ function start(s){
   render();renderDue();renderLog();
 }
 
-(function(){
+/* 事業者・返礼品のデータは配信ファイルとは別に持つ。
+   事業者を追加するときはこのJSONを更新するだけでよく、画面の再配信は不要。
+   読み込めなかった場合は、このファイルに同梱した内容でそのまま動く。 */
+const DATA_URL='https://raw.githubusercontent.com/nikaido6969/earth001/claude/business-mobile-management-17yde3/docs/data.json';
+
+async function loadData(){
+  try{
+    const res=await fetch(DATA_URL,{cache:'no-store'});
+    if(!res.ok)return;
+    const d=await res.json();
+    if(d&&d.municipalities)MUNI={...MUNI,...d.municipalities};
+    if(d&&Array.isArray(d.accounts)&&d.accounts.length){
+      const byId=new Map(ACCOUNTS.map(a=>[a.id,a]));
+      d.accounts.forEach(a=>byId.set(a.id,a));
+      ACCOUNTS=[...byId.values()];
+    }
+    if(d&&Array.isArray(d.products)&&d.products.length){
+      const replaced=new Set(d.products.map(p=>p.operatorId));
+      PRODUCTS=[...PRODUCTS.filter(p=>!replaced.has(p.operatorId)),...d.products]
+        .map((x,i)=>({...x,id:i+1}));
+    }
+  }catch(e){/* 取得できなければ同梱データのまま動かす */}
+}
+
+(async function(){
+  await loadData();
+
   // 事業者ごとの専用リンク（?op=事業者ID）で開いた場合は、ID・パスワードの入力なしでそのまま利用できる
   let op=null;
   try{op=new URLSearchParams(location.search).get('op')}catch(e){}

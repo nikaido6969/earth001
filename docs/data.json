@@ -1,0 +1,170 @@
+{
+ "municipalities": {
+  "shiojiri": {
+   "name": "塩尻市"
+  },
+  "kijimadaira": {
+   "name": "木島平村"
+  }
+ },
+ "accounts": [
+  {
+   "id": "DD001",
+   "name": "yoshie ヴィンヤード（吉江 豊）",
+   "muni": "shiojiri",
+   "h": "e5e7100cde213d2b5629c20324b4e1f4725e4be8619afefcaabf67ccda1df6a6"
+  },
+  {
+   "id": "DJ001",
+   "name": "モモセ果樹園",
+   "muni": "shiojiri",
+   "h": "5175c4a5808c1b277c13c3bf19ac6894dd96596e2cad5b267f0d4c560c7a7ee3"
+  }
+ ],
+ "products": [
+  {
+   "operatorId": "DD001",
+   "productCode": "DD01",
+   "productName": "【2026年先行予約】信州塩尻産 シャインマスカット 2房 約1kg",
+   "price": 3000,
+   "stock": 50,
+   "stockStatus": "active",
+   "shippingFrom": "2026-09-15",
+   "shippingTo": "2026-10-31",
+   "acceptFrom": "2026-06-01",
+   "acceptTo": "2026-08-28"
+  },
+  {
+   "operatorId": "DD001",
+   "productCode": "DD02",
+   "productName": "【2026年先行予約】信州塩尻産 クイーンルージュ 2房 約1kg",
+   "price": 4000,
+   "stock": 50,
+   "stockStatus": "active",
+   "shippingFrom": "2026-09-20",
+   "shippingTo": "2026-10-15",
+   "acceptFrom": "2026-06-01",
+   "acceptTo": "2026-08-31"
+  },
+  {
+   "operatorId": "DD001",
+   "productCode": "DD04",
+   "productName": "【2026年先行予約】信州塩尻産 シャインマスカット＆クイーンルージュのセット 各1房 約1kg",
+   "price": 3500,
+   "stock": 30,
+   "stockStatus": "active",
+   "shippingFrom": "2026-09-20",
+   "shippingTo": "2026-10-15",
+   "acceptFrom": "2026-06-01",
+   "acceptTo": "2026-09-10"
+  },
+  {
+   "operatorId": "DD001",
+   "productCode": "DD05",
+   "productName": "【2026年先行予約】希少品種♪ 信州塩尻産 富士の輝き＆シャインマスカットのセット 各1房 約1kg",
+   "price": 4000,
+   "stock": 30,
+   "stockStatus": "active",
+   "shippingFrom": "2026-09-20",
+   "shippingTo": "2026-10-31",
+   "acceptFrom": "2026-06-01",
+   "acceptTo": "2026-09-10"
+  },
+  {
+   "operatorId": "DD001",
+   "productCode": "DD09",
+   "productName": "【2026年先行予約】訳あり バラ房シャインマスカット 約400g×4パック",
+   "price": 3240,
+   "stock": 10,
+   "stockStatus": "active",
+   "shippingFrom": "2026-09-15",
+   "shippingTo": "2026-10-31",
+   "acceptFrom": "2026-06-01",
+   "acceptTo": "2026-08-26"
+  },
+  {
+   "operatorId": "DJ001",
+   "productCode": "DJ01",
+   "productName": "【2026年先行予約】【訳あり】モモセ果樹園 信州塩尻産 シナノリップ 5kg",
+   "price": 3000,
+   "stock": 10,
+   "stockStatus": "active",
+   "shippingFrom": "2026-08-10",
+   "shippingTo": "2026-08-20",
+   "acceptFrom": "2026-06-01",
+   "acceptTo": "2026-08-05"
+  },
+  {
+   "operatorId": "DJ001",
+   "productCode": "DJ02",
+   "productName": "【2026年先行予約】【訳あり】モモセ果樹園 信州塩尻産 サンつがる 5kg",
+   "price": 3000,
+   "stock": 10,
+   "stockStatus": "active",
+   "shippingFrom": "2026-08-20",
+   "shippingTo": "2026-08-30",
+   "acceptFrom": "2026-06-01",
+   "acceptTo": "2026-08-27"
+  },
+  {
+   "operatorId": "DJ001",
+   "productCode": "DJ03",
+   "productName": "【2026年先行予約】【訳あり】モモセ果樹園 信州塩尻産 紅玉 5kg",
+   "price": 2500,
+   "stock": 20,
+   "stockStatus": "active",
+   "shippingFrom": "2026-09-15",
+   "shippingTo": "2026-09-25",
+   "acceptFrom": "2026-06-01",
+   "acceptTo": "2026-09-05"
+  },
+  {
+   "operatorId": "DJ001",
+   "productCode": "DJ04",
+   "productName": "【2026年先行予約】【訳あり】モモセ果樹園 信州塩尻産 秋映 5kg",
+   "price": 3000,
+   "stock": 20,
+   "stockStatus": "active",
+   "shippingFrom": "2026-09-25",
+   "shippingTo": "2026-10-05",
+   "acceptFrom": "2026-06-01",
+   "acceptTo": "2026-08-30"
+  },
+  {
+   "operatorId": "DJ001",
+   "productCode": "DJ05",
+   "productName": "【2026年先行予約】【訳あり】モモセ果樹園 信州塩尻産 シナノスイート 5kg",
+   "price": 3000,
+   "stock": 5,
+   "stockStatus": "active",
+   "shippingFrom": "2026-10-10",
+   "shippingTo": "2026-10-20",
+   "acceptFrom": "2026-06-01",
+   "acceptTo": "2026-09-25"
+  },
+  {
+   "operatorId": "DJ001",
+   "productCode": "DJ06",
+   "productName": "【2026年先行予約】【訳あり】モモセ果樹園 信州塩尻産 サンふじ 5kg",
+   "price": 3500,
+   "stock": 5,
+   "stockStatus": "active",
+   "shippingFrom": "2026-11-20",
+   "shippingTo": "2026-11-30",
+   "acceptFrom": "2026-08-01",
+   "acceptTo": "2026-11-05"
+  },
+  {
+   "operatorId": "DJ001",
+   "productCode": "DJ07",
+   "productName": "【2026年先行予約】【訳あり】モモセ果樹園 信州塩尻産 グラニースミス 5kg",
+   "price": 2500,
+   "stock": 10,
+   "stockStatus": "active",
+   "shippingFrom": "2026-11-20",
+   "shippingTo": "2026-11-30",
+   "acceptFrom": "2026-08-01",
+   "acceptTo": "2026-11-05"
+  }
+ ]
+}
