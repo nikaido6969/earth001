@@ -1,0 +1,309 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>塩尻市 7月度活動報告</title>
+<style>
+  @page { size: A4; margin: 0; }
+
+  :root {
+    --ink:       #1d1d1f;
+    --ink2:      #6e6e73;
+    --ink3:      #86868b;
+    --line:      #d2d2d7;
+    --line-soft: #e8e8ed;
+    --fill:      #f5f5f7;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #ffffff;
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro JP", "SF Pro Text",
+                 "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic",
+                 "Noto Sans JP", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "palt" 1;
+  }
+
+  .sheet {
+    width: 210mm;
+    height: 297mm;
+    padding: 16mm 17mm 13mm;
+    display: flex;
+    flex-direction: column;
+    gap: 7mm;
+  }
+
+  /* ===== masthead ===== */
+
+  .masthead {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-bottom: 4mm;
+    border-bottom: 0.6mm solid var(--ink);
+  }
+
+  .masthead .eyebrow {
+    margin: 0 0 1.5mm;
+    font-size: 8.5pt;
+    font-weight: 600;
+    letter-spacing: .04em;
+    color: var(--ink3);
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 26pt;
+    font-weight: 700;
+    letter-spacing: -.02em;
+    line-height: 1.1;
+  }
+
+  .masthead .period {
+    text-align: right;
+    font-size: 10pt;
+    color: var(--ink2);
+    font-variant-numeric: tabular-nums;
+  }
+  .masthead .period b { display: block; font-size: 14pt; font-weight: 700; color: var(--ink); }
+
+  /* ===== KPI ===== */
+
+  .kpi {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-top: 0.3mm solid var(--line);
+    border-bottom: 0.3mm solid var(--line);
+    padding: 5mm 0;
+  }
+  .kpi > div {
+    padding-left: 6mm;
+    border-left: 0.3mm solid var(--line-soft);
+  }
+  .kpi > div:first-child { border-left: none; padding-left: 0; }
+  .kpi .n {
+    font-size: 27pt;
+    font-weight: 700;
+    letter-spacing: -.02em;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  .kpi .n span { font-size: 10pt; font-weight: 500; margin-left: 1mm; }
+  .kpi .k { display: block; margin-top: 2mm; font-size: 9pt; font-weight: 600; color: var(--ink2); }
+
+  /* ===== grid of sections ===== */
+
+  .grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+  }
+
+  .cell {
+    padding: 5.5mm 6mm 5.5mm 0;
+    border-top: 0.3mm solid var(--line-soft);
+  }
+  .grid > .cell:nth-child(3n+1) { padding-left: 0; }
+  .grid > .cell:nth-child(3n+2),
+  .grid > .cell:nth-child(3n) { padding-left: 6mm; border-left: 0.3mm solid var(--line-soft); }
+  .grid > .cell:nth-child(-n+3) { border-top: none; }
+
+  .cell h2 {
+    margin: 0 0 3.5mm;
+    font-size: 11pt;
+    font-weight: 700;
+    letter-spacing: -.005em;
+    display: flex;
+    align-items: baseline;
+    gap: 2mm;
+    flex-wrap: wrap;
+  }
+  .cell h2 .badge {
+    font-size: 8pt;
+    font-weight: 600;
+    color: var(--ink3);
+    white-space: nowrap;
+  }
+
+  .cell ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 2.4mm;
+  }
+  .cell li {
+    font-size: 8.6pt;
+    line-height: 1.5;
+    color: var(--ink2);
+    display: grid;
+    grid-template-columns: 9mm 1fr;
+    gap: 1.8mm;
+  }
+  .cell li b {
+    font-weight: 500;
+    color: var(--ink3);
+    font-variant-numeric: tabular-nums;
+    font-size: 7.6pt;
+  }
+  .cell li strong { color: var(--ink); font-weight: 600; }
+
+  .cell .status-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2mm;
+    margin-top: 2mm;
+  }
+  .pill {
+    background: var(--fill);
+    border-radius: 3mm;
+    padding: 1.4mm 3mm;
+    font-size: 7.8pt;
+    color: var(--ink2);
+  }
+  .pill b { color: var(--ink); font-weight: 700; }
+
+  .cell.wide { grid-column: span 3; }
+
+  /* continuation cell */
+  .continue { grid-column: span 3; padding-top: 4mm; border-top: 0.3mm solid var(--line-soft); }
+  .continue-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4mm;
+  }
+  .chip {
+    background: var(--fill);
+    border-radius: 3mm;
+    padding: 4mm 4.5mm;
+  }
+  .chip .num { font-size: 7.2pt; font-weight: 700; color: var(--ink3); }
+  .chip .ttl { display: block; margin-top: 1.2mm; font-size: 9pt; font-weight: 700; }
+  .chip .sub { display: block; margin-top: 0.8mm; font-size: 7.6pt; color: var(--ink2); line-height: 1.4; }
+
+  footer {
+    margin-top: auto;
+    padding-top: 4mm;
+    border-top: 0.3mm solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    font-size: 8pt;
+    color: var(--ink3);
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="masthead">
+    <div>
+      <p class="eyebrow">株式会社アース ／ ふるさと納税支援業務</p>
+      <h1>塩尻市　7月度 活動報告</h1>
+    </div>
+    <div class="period">報告者：二階堂<b>2026年7月1日 — 7月31日</b></div>
+  </div>
+
+  <div class="kpi">
+    <div><span class="n">6<span>件</span></span><span class="k">事業者訪問</span></div>
+    <div><span class="n">5<span>社</span></span><span class="k">新規事業者対応</span></div>
+    <div><span class="n">24<span>社</span></span><span class="k">3号 申請済み</span></div>
+    <div><span class="n">6<span>件</span></span><span class="k">疑義照会 対応</span></div>
+  </div>
+
+  <div class="grid">
+
+    <div class="cell">
+      <h2>事業者訪問・面談<span class="badge">6件</span></h2>
+      <ul>
+        <li><b>7/2</b><span>くるみっくる　新規説明・規格確定</span></li>
+        <li><b>7/13</b><span>レッドハウスファニチャー　<strong>朝日村共通8号</strong>を提案</span></li>
+        <li><b>7/15</b><span>リカーハウスながはら　基準確認</span></li>
+        <li><b>7/17</b><span>Voyage Coffee　Web面談</span></li>
+        <li><b>7/23</b><span>タナカセイサクショ　3号ヒアリング</span></li>
+        <li><b>7/24</b><span><strong>市企画課同席</strong>　うぃずの森 説明</span></li>
+      </ul>
+    </div>
+
+    <div class="cell">
+      <h2>新規返礼品<span class="badge">申請・掲載</span></h2>
+      <ul>
+        <li><b>7/10</b><span>くるみっくる　登録申請</span></li>
+        <li><b>7/17</b><span>Voyage Coffee　<strong>10品目 申請</strong></span></li>
+        <li><b>7/18</b><span>ワイン各社　<strong>2号で申請</strong></span></li>
+        <li><b>7/22</b><span>振興センター他5社　様式2号申請</span></li>
+        <li><b>7/27</b><span>山本農園・モモセ果樹園　在庫追加</span></li>
+        <li><b>7/29</b><span>うぃずの森　規格提案進行中</span></li>
+      </ul>
+    </div>
+
+    <div class="cell">
+      <h2>地場産品基準 第3号<span class="badge">R8.10月施行</span></h2>
+      <ul>
+        <li><b>7/9</b><span>自動発行の仕組みを構築</span></li>
+        <li><b>7/13</b><span><strong>別添統合・提出完了</strong></span></li>
+        <li><b>7/16</b><span><strong>未回答14社へ一斉フォロー</strong></span></li>
+        <li><b>7/21</b><span>ワイン2号・3号の切り分け</span></li>
+      </ul>
+      <div class="status-row">
+        <span class="pill"><b>24</b>申請済み</span>
+        <span class="pill"><b>3</b>継続対応</span>
+        <span class="pill"><b>4</b>撤退</span>
+      </div>
+    </div>
+
+    <div class="cell">
+      <h2>ワイン定期便企画</h2>
+      <ul>
+        <li><b>7/1</b><span>自治体との定期便MTG</span></li>
+        <li><b>7/2–3</b><span><strong>7社へ</strong>発注買取・見積依頼</span></li>
+        <li><b>7/6</b><span>観光協会 売店へ追加見積</span></li>
+        <li><b>7/14</b><span><strong>酒井MGR・山崎MGRとMTG</strong></span></li>
+      </ul>
+    </div>
+
+    <div class="cell">
+      <h2>自治体対応・報告</h2>
+      <ul>
+        <li><b>随時</b><span>担当課との相談・調整</span></li>
+        <li><b>7/13</b><span>自治体MTG（3号／ワイン）</span></li>
+        <li><b>7/24</b><span>6月度 月次報告書 提出</span></li>
+        <li><b>7/27</b><span><strong>疑義照会 対応済み</strong>（森林公社）</span></li>
+      </ul>
+    </div>
+
+    <div class="cell">
+      <h2>広告運用</h2>
+      <ul>
+        <li><b>7/18</b><span>楽天RPP キーワード・CPC調整</span></li>
+        <li><b>7/24</b><span><strong>楽天フェス エントリー</strong></span></li>
+      </ul>
+    </div>
+
+    <div class="continue">
+      <h2 style="margin-bottom:2.5mm;">8月度に向けた継続事項</h2>
+      <div class="continue-grid">
+        <div class="chip"><span class="num">01</span><span class="ttl">新規5社の掲載完了</span><span class="sub">ニコニコ農園ほか</span></div>
+        <div class="chip"><span class="num">02</span><span class="ttl">うぃずの森</span><span class="sub">ぶどう2t規格確定</span></div>
+        <div class="chip"><span class="num">03</span><span class="ttl">3号 未提出3社</span><span class="sub">証明書回収</span></div>
+        <div class="chip"><span class="num">04</span><span class="ttl">ケラッタ</span><span class="sub">同意後に申請</span></div>
+        <div class="chip"><span class="num">05</span><span class="ttl">繁忙期在庫管理</span><span class="sub">シャインマスカット</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <span>塩尻市 ふるさと納税支援業務　7月度 活動報告</span>
+    <span>2026年7月1日 — 7月31日</span>
+  </footer>
+
+</div>
+</body>
+</html>

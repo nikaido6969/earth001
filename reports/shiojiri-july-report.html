@@ -89,61 +89,10 @@
     font-variant-numeric: tabular-nums;
   }
 
-  /* ============ apology ============ */
-
-  .apology {
-    margin-top: 28px;
-    padding: 22px 24px;
-    background: var(--fill);
-    border-radius: 16px;
-  }
-
-  .apology .tag {
-    font-size: 11.5px;
-    font-weight: 700;
-    letter-spacing: .06em;
-    color: var(--ink3);
-    margin: 0 0 8px;
-  }
-
-  .apology h2 {
-    margin: 0 0 10px;
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: -.01em;
-  }
-
-  .apology p {
-    margin: 0;
-    max-width: none;
-    font-size: 13.5px;
-    line-height: 1.85;
-    color: var(--ink2);
-  }
-  .apology p + p { margin-top: 10px; }
-  .apology strong { color: var(--ink); }
-
-  .apology .dates {
-    display: flex;
-    gap: 24px;
-    margin-top: 16px;
-    padding-top: 16px;
-    border-top: 1px solid var(--line-soft);
-  }
-  .apology .dates div { display: flex; flex-direction: column; gap: 2px; }
-  .apology .dates b {
-    font-size: 20px;
-    font-weight: 700;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: -.02em;
-  }
-  .apology .dates span { font-size: 11.5px; color: var(--ink3); }
-  .apology .arrow { align-self: center; color: var(--ink3); font-size: 16px; }
-
   /* ============ KPI ============ */
 
   .kpi {
-    margin-top: 32px;
+    margin-top: 8px;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     border-top: 1px solid var(--line);
@@ -387,7 +336,6 @@
     .kpi { grid-template-columns: repeat(2, 1fr); }
     .kpi > div:nth-child(3) { border-left: none; padding-left: 0; }
     .kpi > div:nth-child(3), .kpi > div:nth-child(4) { border-top: 1px solid var(--line-soft); }
-    .apology .dates { gap: 14px; }
   }
 </style>
 
@@ -401,17 +349,6 @@
       <span>報告者：二階堂</span>
     </div>
   </header>
-
-  <div class="apology">
-    <p class="tag">お詫び</p>
-    <h2>様式2号の提出遅延について</h2>
-    <p>ワイン既存返礼品の<strong>2号・3号 区分の再調査</strong>（取扱事業者への確認、ワイナリーへの生産地・使用比率の確認）に想定以上の時間を要し、当初期限までにご提出できませんでした。<strong>確認不足による見通しの誤り</strong>が原因です。ご迷惑をおかけしましたこと、深くお詫び申し上げます。</p>
-    <div class="dates">
-      <div><b>7/16</b><span>当初期限</span></div>
-      <div class="arrow">→</div>
-      <div><b>7/24</b><span>ご猶予いただいた期限（提出完了）</span></div>
-    </div>
-  </div>
 
   <div class="kpi">
     <div><span class="n">6<span>件</span></span><span class="k">事業者訪問</span></div>
