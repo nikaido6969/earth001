@@ -258,7 +258,8 @@ const ACCOUNTS=[
  {id:'SJR003',name:'有限会社 野村農場（米）',muni:'shiojiri',h:'565c1f4e7621fad88095e0b6b0c328e090b17c245fd89865c2c758dcd32edf1b'},
  {id:'SJR004',name:'株式会社アクアファームくるめ',muni:'shiojiri',h:'36d06dd95397141ed89b6ab47cea333c816ca00cccbd389777ea9633eb5f41dd'},
  {id:'SJR005',name:'生産者直売所 アルプス市場',muni:'shiojiri',h:'b5913fd5b4418ad0dcf1775d3e8a941fe65ba16f541966a8f884a879d9daeca0'},
- {id:'KJM001',name:'（一財）木島平村農業振興公社',muni:'kijimadaira',h:'10c226eb6cf863859214b0e73b7fe3bcb6a7948806bad7f1c130e3b0acdf31ba'}
+ {id:'KJM001',name:'（一財）木島平村農業振興公社',muni:'kijimadaira',h:'10c226eb6cf863859214b0e73b7fe3bcb6a7948806bad7f1c130e3b0acdf31ba'},
+ {id:'DD001',name:'yoshie ヴィンヤード（吉江 豊）',muni:'shiojiri',h:'e5e7100cde213d2b5629c20324b4e1f4725e4be8619afefcaabf67ccda1df6a6'}
 ];
 
 /* ============ 返礼品（塩尻市マスタ 返礼品マスタ より抽出） ============ */
@@ -295,7 +296,12 @@ const PRODUCTS=[
  mk('SJR005',['A03','【ご家庭用】シャインマスカット 2kg',5000,20,'2026-09-30','2026-10-20','2026-06-01','2026-08-23']),
  mk('KJM001',['K01','木島平村産 コシヒカリ 5kg（白米）',3500,150,'','','2026-08-01','2027-03-31']),
  mk('KJM001',['K02','木島平村産 コシヒカリ 10kg（白米）',6500,100,'','','2026-08-01','2027-03-31']),
- mk('KJM001',['K03','木島平村産 コシヒカリ 5kg（玄米）',3500,60,'','','2026-08-01','2027-03-31'])
+ mk('KJM001',['K03','木島平村産 コシヒカリ 5kg（玄米）',3500,60,'','','2026-08-01','2027-03-31']),
+ mk('DD001',['DD01','【2026年先行予約】信州塩尻産 シャインマスカット 2房 約1kg',3000,50,'2026-09-15','2026-10-31','2026-06-01','2026-08-28']),
+ mk('DD001',['DD02','【2026年先行予約】信州塩尻産 クイーンルージュ 2房 約1kg',4000,50,'2026-09-20','2026-10-15','2026-06-01','2026-08-31']),
+ mk('DD001',['DD04','【2026年先行予約】信州塩尻産 シャインマスカット＆クイーンルージュのセット 各1房 約1kg',3500,30,'2026-09-20','2026-10-15','2026-06-01','2026-09-10']),
+ mk('DD001',['DD05','【2026年先行予約】希少品種♪ 信州塩尻産 富士の輝き＆シャインマスカットのセット 各1房 約1kg',4000,30,'2026-09-20','2026-10-31','2026-06-01','2026-09-10']),
+ mk('DD001',['DD09','【2026年先行予約】訳あり バラ房シャインマスカット 約400g×4パック',3240,10,'2026-09-15','2026-10-31','2026-06-01','2026-08-26'])
 ].map((x,i)=>({id:i+1,...x}));
 
 const LABELS={stock:'在庫調整',price:'商品代変更',desiredDate:'変更希望日',shippingPeriod:'発送期間変更',acceptPeriod:'受付期間変更'};
@@ -688,6 +694,18 @@ function start(s){
 }
 
 (function(){
+  // 事業者ごとの専用リンク（?op=事業者ID）で開いた場合は、ID・パスワードの入力なしでそのまま利用できる
+  let op=null;
+  try{op=new URLSearchParams(location.search).get('op')}catch(e){}
+  if(op){
+    const a=ACCOUNTS.find(x=>x.id===String(op).trim().toUpperCase());
+    if(a){
+      const s={id:a.id,name:a.name,muni:a.muni};
+      try{localStorage.setItem(TK,JSON.stringify(s))}catch(e){}
+      start(s);
+      return;
+    }
+  }
   let s=null;
   try{s=JSON.parse(localStorage.getItem(TK)||'null')}catch(e){}
   if(s&&ACCOUNTS.some(a=>a.id===s.id))start(s);
