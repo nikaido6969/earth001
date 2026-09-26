@@ -124,6 +124,8 @@ header .sub{font-size:10.5px;opacity:.86;margin-top:3px;letter-spacing:.02em}
 .slip-note{background:var(--danger-soft);border:1px solid color-mix(in srgb,var(--danger) 40%,transparent);border-radius:12px;
   padding:12px 13px;font-size:12px;line-height:1.85;color:var(--danger);margin:4px 0 14px}
 .slip-note b{font-weight:900}
+.slip-lead{background:var(--danger);color:#fff;border-radius:12px;padding:13px 14px;margin:4px 0 10px;
+  font-size:14.5px;font-weight:900;line-height:1.6;text-align:center;letter-spacing:.01em}
 .slip-note ul{margin:0;padding-left:1.1em}
 
 /* ---- sheet ---- */
@@ -606,8 +608,8 @@ function shPrice(p){
   $('#cx').onclick=close;
   $('#ok').onclick=()=>{const v=norm();if(v<=0)return toast('商品代を入力してください');submit(p,'price',{newPrice:v,desiredDate:dw.get()})};
 }
-const SLIP_NOTE='<div class="slip-note"><ul>'+
-  '<li>青果物等が<b>まもなく収穫・発送できるタイミング</b>でご依頼ください。</li>'+
+const SLIP_NOTE='<div class="slip-lead">伝票発行依頼は、青果物等が<br>まもなく収穫・発送できるタイミングで<br>ご依頼ください。</div>'+
+  '<div class="slip-note"><ul>'+
   '<li>伝票は<b>翌日〜翌々日</b>に届きます。<b>土日祝は対応できません。</b></li>'+
   '<li>伝票の有効期限は<b>1ヶ月以内</b>です。<b>期限切れの伝票は使用しないでください。</b></li>'+
   '<li>再発行は<b>1枚につき88円</b>ご負担いただきます。</li></ul></div>';
