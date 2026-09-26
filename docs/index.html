@@ -607,7 +607,8 @@ function shPrice(p){
   $('#ok').onclick=()=>{const v=norm();if(v<=0)return toast('商品代を入力してください');submit(p,'price',{newPrice:v,desiredDate:dw.get()})};
 }
 const SLIP_NOTE='<div class="slip-note"><ul>'+
-  '<li>伝票は<b>翌日〜翌々日</b>に届きます。</li>'+
+  '<li>青果物等が<b>まもなく収穫・発送できるタイミング</b>でご依頼ください。</li>'+
+  '<li>伝票は<b>翌日〜翌々日</b>に届きます。<b>土日祝は対応できません。</b></li>'+
   '<li>伝票の有効期限は<b>1ヶ月以内</b>です。<b>期限切れの伝票は使用しないでください。</b></li>'+
   '<li>再発行は<b>1枚につき88円</b>ご負担いただきます。</li></ul></div>';
 
@@ -617,11 +618,9 @@ document.addEventListener('click',e=>{
 });
 
 function shSlip(p){
-  open('<h2>伝票発行依頼</h2><p class="hint">'+esc(p.productName)+'<br>必要な伝票の枚数を選んで送信してください。</p>'+SLIP_NOTE+
-   '<div class="secl">必要な枚数</div><div id="w"></div>'+FOOT);
-  const w=wheel($('#w'),rng(1,100).map(v=>({value:v,label:v+'枚'})),0);
+  open('<h2>伝票発行依頼</h2><p class="hint">'+esc(p.productName)+'<br>下記をご確認のうえ、送信してください。</p>'+SLIP_NOTE+FOOT);
   $('#cx').onclick=close;
-  $('#ok').onclick=()=>submit(p,'slip',{count:w.get()});
+  $('#ok').onclick=()=>submit(p,'slip',{});
 }
 
 function shStop(p){
@@ -651,8 +650,7 @@ function submit(p,type,pl){
       summary='在庫受付を「'+after+'」に変更'+(pl.desiredDate?'（希望日 '+pl.desiredDate+'）':'');
     }
   }else if(type==='slip'){
-    before='—';after=pl.count+'枚';
-    summary='伝票 '+pl.count+'枚の発行を依頼';
+    summary='伝票の発行を依頼';
   }else if(type==='price'){
     before=Number(eff(p,'price')).toLocaleString()+'円';after=pl.newPrice.toLocaleString()+'円';
     summary='商品代を '+before+' → '+after+' に変更'+(pl.desiredDate?'（反映希望日 '+pl.desiredDate+'）':'');
@@ -670,7 +668,7 @@ function submit(p,type,pl){
       '\n自治体： '+(MUNI[session.muni]?MUNI[session.muni].name:'塩尻市')+
       '\n事業者： '+session.name+'（'+session.id+'）'+
       '\n返礼品： '+p.productName+'（'+p.productCode+'）'+
-      (slip?'\n依頼枚数： '+after:
+      (slip?'':
       '\n変更前： '+before+
       '\n変更後： '+after)+
       (pl.desiredDate?'\n希望日： '+pl.desiredDate:'')+
