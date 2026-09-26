@@ -462,9 +462,9 @@ function renderDue(){
    }).join(''):'<div class="empty">受付終了が1週間以内に迫っている<br>先行予約・期間限定の返礼品はありません。</div>');
 }
 
-document.addEventListener('change',e=>{
+document.addEventListener('change',async e=>{
   const s=e.target.closest('select[data-renew]');if(!s)return;
-  const p=products.find(x=>x.id===+s.dataset.renew),v=s.value;
+  const p=products.find(x=>x.id===+s.dataset.renew),v=s.value,prev=renew[p.id];
   renew[p.id]=v;
   try{localStorage.setItem(RN,JSON.stringify(renew))}catch(err){}
 
@@ -479,6 +479,13 @@ document.addEventListener('change',e=>{
   }
 
   const at=new Date().toLocaleString('ja-JP',{timeZone:'Asia/Tokyo'});
+  s.disabled=true;
+  try{await notify({type:'renew',productCode:p.productCode,productName:p.productName,acceptTo:eff(p,'acceptTo'),answer:v,requestedAt:at})}
+  catch(err){
+    renew[p.id]=prev;
+    try{localStorage.setItem(RN,JSON.stringify(renew))}catch(e2){}
+    renderDue();return toast(SEND_ERR,4000);
+  }
   sentLog.unshift({typeLabel:'翌年度の受付可否',productName:p.productName,productCode:p.productCode,requestedAt:at,
     lark:'【翌年度の受付可否】'+
       '\n自治体： '+(MUNI[session.muni]?MUNI[session.muni].name:'塩尻市')+
@@ -501,17 +508,21 @@ document.addEventListener('input',e=>{
   try{localStorage.setItem(RNN,JSON.stringify(renewNote))}catch(err){}
 });
 
-document.addEventListener('click',e=>{
+document.addEventListener('click',async e=>{
   const b=e.target.closest('[data-renew-send]');if(!b)return;
   const p=products.find(x=>x.id===+b.dataset.renewSend);
   const rn=renewNote[p.id]||{text:''};
   const text=(rn.text||'').trim();
   if(!text)return toast('内容をご記入ください');
 
+  const at=new Date().toLocaleString('ja-JP',{timeZone:'Asia/Tokyo'});
+  b.disabled=true;b.textContent='送信中…';
+  try{await notify({type:'renew',productCode:p.productCode,productName:p.productName,acceptTo:eff(p,'acceptTo'),answer:'その他',note:text,requestedAt:at})}
+  catch(err){b.disabled=false;b.textContent='この内容で送信';return toast(SEND_ERR,4000)}
+
   rn.text=text;rn.sent=true;renewNote[p.id]=rn;
   try{localStorage.setItem(RNN,JSON.stringify(renewNote))}catch(err){}
 
-  const at=new Date().toLocaleString('ja-JP',{timeZone:'Asia/Tokyo'});
   sentLog.unshift({typeLabel:'翌年度の受付可否',productName:p.productName,productCode:p.productCode,requestedAt:at,
     lark:'【翌年度の受付可否】'+
       '\n自治体： '+(MUNI[session.muni]?MUNI[session.muni].name:'塩尻市')+
@@ -526,6 +537,18 @@ document.addEventListener('click',e=>{
   toast('送信しました',3400);
   if(navigator.vibrate)navigator.vibrate([8,40,8]);
 });
+
+/* 申請内容はサーバー（/api/notify）経由でLarkへ通知する。
+   届いたことを確認できた申請だけを「送信済み」に記録する。 */
+const SEND_ERR='送信できませんでした。通信状況をご確認のうえ、もう一度お試しください。';
+async function notify(payload){
+  const res=await fetch('/api/notify',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({municipality:MUNI[session.muni]?MUNI[session.muni].name:'塩尻市',
+      operatorId:session.id,operatorName:session.name,...payload})});
+  const j=await res.json().catch(()=>({}));
+  if(!res.ok||!j.ok)throw new Error(j.error||res.status);
+}
+function busy(on){const b=$('#ok');if(!b)return;b.disabled=on;b.textContent=on?'送信中…':'この内容で送信'}
 
 function renderLog(){
   $('#lc').textContent=sentLog.length?' '+sentLog.length:'';
@@ -639,7 +662,7 @@ function shPeriod(p,type,title,ff,tf){
   $('#ok').onclick=()=>{const f=a.get(),t=b.get();if(f>t)return toast('開始日は終了日より前にしてください');submit(p,type,{from:f,to:t})};
 }
 
-function submit(p,type,pl){
+async function submit(p,type,pl){
   let summary='',before='',after='';
   if(type==='stock'){
     if(pl.action==='adjust'){
@@ -676,6 +699,11 @@ function submit(p,type,pl){
       (pl.desiredDate?'\n希望日： '+pl.desiredDate:'')+
       '\n申請日時： '+at};
 
+  busy(true);
+  try{await notify({type,typeLabel:LABELS[type],productCode:p.productCode,productName:p.productName,
+    before:rec.before,after:rec.after,desiredDate:pl.desiredDate||'',requestedAt:at})}
+  catch(err){busy(false);return toast(SEND_ERR,4000)}
+
   const pp=pending[p.id]||(pending[p.id]={});
   if(type==='stock'){
     if(pl.action==='adjust')pp.stock=Math.max(0,Number(eff(p,'stock'))+pl.delta);
@@ -692,7 +720,7 @@ function submit(p,type,pl){
   try{localStorage.setItem(LG,JSON.stringify(sentLog.slice(0,60)))}catch(e){}
 
   close();render();renderDue();renderLog();
-  toast('送信しました　'+summary,3600);
+  toast(type==='slip'?'伝票発行依頼を送信しました。担当者に通知されました。':'送信しました　'+summary,3600);
   if(navigator.vibrate)navigator.vibrate([8,40,8]);
 }
 
